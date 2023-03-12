@@ -37,6 +37,9 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	implementation 'org.springframework.boot:spring-boot-starter-security:2.7.6'
 }
 
 dependencyManagement {
@@ -49,9 +52,3 @@ test {
 	useJUnitPlatform()
 }
 
-// The following pnpmEnable = true is not needed as pnpm is used by default,
-// this is just an example of how to configure the Gradle Vaadin Plugin:
-// for more configuration options please see: https://vaadin.com/docs/latest/guide/start/gradle/#all-options
-vaadin {
-	pnpmEnable = true
-}
