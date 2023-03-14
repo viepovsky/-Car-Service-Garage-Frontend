@@ -3,6 +3,7 @@ package com.frontend.domainDto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterUserDto {
-    private Long id;
 
     @NotBlank
     private String firstName;
@@ -23,10 +23,11 @@ public class RegisterUserDto {
     @Email
     private String email;
 
-    @NotBlank
+    @Pattern(regexp = "^\\+?[0-9\\- ]{9,}$", message = "Invalid phone number")
     private String phoneNumber;
 
-    @NotBlank
+    @Pattern(regexp = "^(?!anonymousUser$)[\\\\w]+$", message = "Username can only contain letters, digits and underscores")
+    @Size(min = 3, max = 50, message = "Username should be at least 3 characters, with maximum of 50.")
     private String username;
 
     @Pattern(regexp = "(?=.*[A-Z])(?=.*[\\W])(?=\\S+$).{8,}", message = "Password should contain at least 8 characters, one uppercase letter, and one special character.")
