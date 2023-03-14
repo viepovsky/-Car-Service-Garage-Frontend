@@ -1,4 +1,4 @@
-package com.frontend.config;
+package com.frontend.security;
 
 import com.frontend.views.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
@@ -32,18 +32,6 @@ public class SecurityConfig extends VaadinWebSecurity {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests()
-//                .antMatchers("/")
-//                .permitAll()
-//                .antMatchers("/home")
-//                .hasAuthority("USER")
-//                .antMatchers("/admin")
-//                .hasAuthority("ADMIN")
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .httpBasic();
-
         super.configure(http);
         setLoginView(http, LoginView.class);
     }

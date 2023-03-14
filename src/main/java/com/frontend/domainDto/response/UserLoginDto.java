@@ -1,4 +1,4 @@
-package com.frontend.domainDto;
+package com.frontend.domainDto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -11,12 +11,10 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @AnonymousAllowed
-@Route(value = "/", layout = MainLayout.class)
-@PageTitle("Main Page | Garage Booking Service")
-public class MainView extends VerticalLayout {
-    private Image img = new Image("images/car_workshop.jpg", "car workshop");
-
-    public MainView() {
+@Route(value = "/cars", layout = MainLayout.class)
+@PageTitle("Car Page | Garage Booking Service")
+public class CarView extends VerticalLayout {
+    public CarView() {
         setSpacing(false);
 
         H1 header = new H1("Welcome to Garage Booking Service!");
@@ -31,8 +29,5 @@ public class MainView extends VerticalLayout {
         setJustifyContentMode(JustifyContentMode.START);
         setDefaultHorizontalComponentAlignment(Alignment.START);
 
-        img.setWidth("500px");
-        img.addClassNames(LumoUtility.Margin.Top.XLARGE);
-        add(img);
     }
 }

@@ -1,5 +1,6 @@
 package com.frontend.views;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
@@ -17,15 +18,13 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 @AnonymousAllowed
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
-    private final LoginForm login = new LoginForm();
-    private final Paragraph registerText = new Paragraph();
     private final LoginOverlay loginOverlay = new LoginOverlay();
 
     public LoginView(){
         LoginI18n i18n = LoginI18n.createDefault();
-        i18n.setAdditionalInformation("You can always test app by creating new user in the registration form above.");
+        i18n.setAdditionalInformation("You can always test app by creating new account in the registration form above.");
         LoginI18n.Form i18nForm = i18n.getForm();
-        i18nForm.setForgotPassword("Create new user, click to open registration form.");
+        i18nForm.setForgotPassword("Create new account.");
         i18n.setForm(i18nForm);
 
         loginOverlay.setI18n(i18n);
@@ -35,7 +34,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         add(loginOverlay);
         loginOverlay.setOpened(true);
         loginOverlay.getElement().setAttribute("no-autofocus", "");
-        loginOverlay.addForgotPasswordListener(click -> Notification.show("Register clicked"));
+        loginOverlay.addForgotPasswordListener(click -> UI.getCurrent().getPage().setLocation("/register"));
     }
 
     @Override

@@ -1,6 +1,6 @@
-package com.frontend.service;
+package com.frontend.security;
 
-import com.frontend.domainDto.UserLoginDto;
+import com.frontend.domainDto.response.UserLoginDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
