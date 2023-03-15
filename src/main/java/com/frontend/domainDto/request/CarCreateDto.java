@@ -27,4 +27,13 @@ public class CarCreateDto {
 
     @NotBlank
     private String engine;
+
+    public CarCreateDto(CarCreateDto carCreateDto) {
+        this.id = carCreateDto.getId();
+        this.make = carCreateDto.getMake();
+        this.model = carCreateDto.getModel();
+        this.year = carCreateDto.getYear();
+        this.type = carCreateDto.getType();
+        this.engine = carCreateDto.getEngine();
+    }
 }

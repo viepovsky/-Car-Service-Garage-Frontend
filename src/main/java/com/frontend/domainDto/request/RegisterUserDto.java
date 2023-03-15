@@ -26,7 +26,7 @@ public class RegisterUserDto {
     @Pattern(regexp = "^\\+?[0-9\\- ]{9,}$", message = "Invalid phone number")
     private String phoneNumber;
 
-    @Pattern(regexp = "^(?!anonymousUser$)[\\\\w]+$", message = "Username can only contain letters, digits and underscores")
+    @Pattern(regexp = "^(?!anonymousUser$)[a-zA-Z0-9_]+$", message = "Username can only contain letters, digits and underscores")
     @Size(min = 3, max = 50, message = "Username should be at least 3 characters, with maximum of 50.")
     private String username;
 

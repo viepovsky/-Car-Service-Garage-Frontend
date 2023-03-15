@@ -9,12 +9,16 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CarForm extends FormLayout {
@@ -29,14 +33,16 @@ public class CarForm extends FormLayout {
     private ComboBox<String> model = new ComboBox<>("Model");
     private TextField engine = new TextField("Engine");
     private Button save = new Button("Save");
+    private Button edit = new Button("Edit");
     private Button delete = new Button("Delete");
-    private Binder<CarCreateDto> binder = new Binder<>(CarCreateDto.class);
-
+    private Button refresh = new Button("Click to refresh car models.");
+    private Button cancel = new Button("Cancel");
+    private Binder<CarCreateDto> binder = new BeanValidationBinder<>(CarCreateDto.class);
+    private CarCreateDto temporaryDto;
     public CarForm(CarApiService carApiService, CarService carService, CarView carView) {
         this.carApiService = carApiService;
         this.carService = carService;
         this.carView = carView;
-
 
         binder.bindInstanceFields(this);
 
@@ -44,20 +50,41 @@ public class CarForm extends FormLayout {
         make.setItems(carApiService.getCarMakes());
         type.setItems(carApiService.getCarTypes());
 
-        HorizontalLayout buttons = new HorizontalLayout(save, delete);
+        HorizontalLayout buttons = new HorizontalLayout(save, edit, delete, cancel);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        add(year, make, type, model, engine, buttons);
+        edit.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        refresh.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        refresh.addClassName(LumoUtility.Margin.Top.MEDIUM);
+        add(year, make, type, model, engine);
+        add(refresh);
+        add(buttons);
 
         save.addClickListener(event -> save());
         delete.addClickListener(event -> delete());
+        refresh.addClickListener(event -> refreshModels());
+
+        binder.addValueChangeListener( event -> {
+            CarCreateDto carCreateDto = new CarCreateDto(binder.getBean());
+            if (temporaryDto != null) {
+                if (temporaryDto.getYear() != carCreateDto.getYear() || !temporaryDto.getMake().equals(carCreateDto.getMake()) || !temporaryDto.getType().equals(carCreateDto.getType())) {
+                    LOGGER.info("Model items set to new ArrayList");
+                    model.setItems(new ArrayList<>());
+                }
+            }
+        });
     }
 
-public void setCarCreateDto(CarCreateDto carCreateDto) {
+    public void setCarCreateDto(CarCreateDto carCreateDto) {
     if (carCreateDto == null) {
         setVisible(false);
     } else if (carCreateDto.equals(new CarCreateDto())) {
+        model.setItems(new ArrayList<>());
         binder.setBean(new CarCreateDto());
-        save.setText("Save");
+        save.setVisible(true);
+        cancel.setVisible(true);
+        delete.setVisible(false);
+        edit.setVisible(false);
+        refresh.setVisible(true);
         setVisible(true);
         year.focus();
     } else {
@@ -65,7 +92,11 @@ public void setCarCreateDto(CarCreateDto carCreateDto) {
         List<String> modelList = carApiService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
         model.setItems(modelList);
         binder.setBean(carCreateDto);
-        save.setText("Edit");
+        save.setVisible(false);
+        cancel.setVisible(false);
+        delete.setVisible(true);
+        edit.setVisible(true);
+        refresh.setVisible(false);
         setVisible(true);
         year.focus();
     }
@@ -87,5 +118,18 @@ public void setCarCreateDto(CarCreateDto carCreateDto) {
         LOGGER.info("Button delete clicked");
         carView.refresh();
         setCarCreateDto(null);
+    }
+
+    private void refreshModels() {
+        CarCreateDto carCreateDto = new CarCreateDto(binder.getBean());
+        LOGGER.info("Clicked refresh button with values: " + carCreateDto);
+        if (carCreateDto.getYear() > 1950 && carCreateDto.getMake() != null && carCreateDto.getType() != null ){
+            List<String> modelList = carApiService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
+            model.setItems(modelList);
+            Notification.show("You can pick your car model now.");
+            this.temporaryDto = new CarCreateDto(carCreateDto);
+        } else {
+            Notification.show("You need to pick year, make and type in order to refresh model.");
+        }
     }
 }
