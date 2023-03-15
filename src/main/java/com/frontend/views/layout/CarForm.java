@@ -62,6 +62,8 @@ public class CarForm extends FormLayout {
         save.addClickListener(event -> save());
         delete.addClickListener(event -> delete());
         refresh.addClickListener(event -> refreshModels());
+        edit.addClickListener(event -> editRecord());
+        cancel.addClickListener(event -> cancelRecord());
 
         binder.addValueChangeListener( event -> {
             CarCreateDto carCreateDto = new CarCreateDto(binder.getBean());
@@ -72,6 +74,21 @@ public class CarForm extends FormLayout {
                 }
             }
         });
+    }
+
+    private void cancelRecord() {
+        LOGGER.info("Button cancel clicked");
+        carView.refresh();
+        setCarCreateDto(null);
+    }
+
+    private void editRecord() {
+        CarCreateDto carCreateDto = binder.getBean();
+        LOGGER.info("Car: " + carCreateDto);
+
+        LOGGER.info("Button edit clicked");
+        carView.refresh();
+        setCarCreateDto(null);
     }
 
     public void setCarCreateDto(CarCreateDto carCreateDto) {
