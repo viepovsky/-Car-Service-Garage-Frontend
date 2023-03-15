@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CarDto {
+    @JsonProperty("id")
+    private Long id;
 
     @JsonProperty("make")
     private String make;

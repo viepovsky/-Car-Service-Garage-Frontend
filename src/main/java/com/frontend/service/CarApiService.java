@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -18,17 +19,20 @@ public class CarApiService {
 
     public List<String> getCarMakes() {
         LOGGER.info("Getting car makes.");
-        return carApiClient.getCarMakes();
+        return Arrays.asList("BMW", "Audi", "Volvo");
+//        return carApiClient.getCarMakes();
     }
 
     public List<String> getCarTypes() {
         LOGGER.info("Getting car types.");
-        return carApiClient.getCarTypes();
+        return Arrays.asList("SEDAN", "COUPE", "SUV");
+//        return carApiClient.getCarTypes();
     }
 
     public List<Integer> getCarYears() {
         LOGGER.info("Getting car years.");
-        return carApiClient.getCarYears();
+        return Arrays.asList(2013, 2014, 2015);
+//        return carApiClient.getCarYears();
     }
 
     public List<String> getCarModels(String make, String type, Integer year) {
@@ -36,7 +40,10 @@ public class CarApiService {
             return new ArrayList<>();
         }
         LOGGER.info("Getting car models.");
-        return carApiClient.getCarModels(make, type, year);
+//        List<String> carModelsList = carApiClient.getCarModels(make, type, year);
+        List<String> carModelsList = Arrays.asList("M5", "5 Series", "7 Series", "3 Series");
+        LOGGER.info("Car models received: " + carModelsList);
+        return carModelsList;
     }
 
 

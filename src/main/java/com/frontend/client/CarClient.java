@@ -42,14 +42,15 @@ public class CarClient {
         }
     }
 
-    public void saveCar(CarCreateDto carCreateDto) {
+    public void saveCar(CarCreateDto carCreateDto, String username) {
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiEndpoint())
+                    .queryParam("username", username)
                     .build()
                     .encode()
                     .toUri();
             restTemplate.postForObject(url, carCreateDto, Void.class);
-            LOGGER.info("Created car for given user id: " + carCreateDto.getUserId());
+            LOGGER.info("Created car for given username: " + username);
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
         }

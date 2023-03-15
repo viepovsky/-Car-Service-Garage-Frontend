@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CarCreateDto {
 
+    private Long id;
+
     @NotBlank
     private String make;
 
@@ -25,8 +27,4 @@ public class CarCreateDto {
 
     @NotBlank
     private String engine;
-
-    @NotNull
-    private Long userId;
-
 }

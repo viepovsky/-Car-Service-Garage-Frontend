@@ -17,20 +17,30 @@ public class CarService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterService.class);
     private final CarClient carClient;
 
-    public List<CarDto> getCarsForGivenUsername(String username) {
+    public List<CarCreateDto> getCarsForGivenUsername(String username) {
         if (username == null) {
             LOGGER.error("Given username is invalid.");
             return new ArrayList<>();
         }
-        return carClient.getCarsForGivenUsername(username);
+        List<CarDto> carDtoList = carClient.getCarsForGivenUsername(username);
+        return carDtoList.stream()
+                .map(n -> new CarCreateDto(
+                        n.getId(),
+                        n.getMake(),
+                        n.getModel(),
+                        n.getYear(),
+                        n.getType(),
+                        n.getEngine()
+                ))
+                .toList();
     }
 
-    public void saveCar(CarCreateDto carCreateDto) {
+    public void saveCar(CarCreateDto carCreateDto, String username) {
         if (carCreateDto == null) {
             LOGGER.error("Given object for save is null.");
             return;
         }{
-            carClient.saveCar(carCreateDto);
+            carClient.saveCar(carCreateDto, username);
         }
     }
 
