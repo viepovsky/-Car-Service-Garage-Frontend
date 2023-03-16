@@ -7,6 +7,7 @@ import com.frontend.views.layout.CarForm;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -20,7 +21,6 @@ import org.slf4j.LoggerFactory;
 @PageTitle("Car Page | Garage Booking Service")
 public class CarView extends VerticalLayout {
     private final String currentUsername = "testuser6"; //SecurityContextHolder.getContext().getAuthentication().getName();
-    private static final Logger LOGGER = LoggerFactory.getLogger(CarView.class);
     private final CarService carService;
     private final CarApiService carApiService;
     private final CarForm form;
@@ -42,6 +42,10 @@ public class CarView extends VerticalLayout {
         HorizontalLayout carContent = new HorizontalLayout(grid, form);
         carContent.setSizeFull();
         grid.setSizeFull();
+
+        setSpacing(false);
+        add(new Paragraph("Here you have got access to all your cars, you can add, edit or delete them."));
+        add(new Paragraph("To book services, you must have at least one car added."));
 
         add(toolbar, carContent);
         form.setCarCreateDto(null);

@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CarService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegisterService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CarService.class);
     private final CarClient carClient;
 
     public List<CarCreateDto> getCarsForGivenUsername(String username) {
@@ -33,6 +33,15 @@ public class CarService {
                         n.getEngine()
                 ))
                 .toList();
+    }
+
+    public void updateCar(CarCreateDto carCreateDto) {
+        if (carCreateDto == null) {
+            LOGGER.error("Given object for update is null.");
+            return;
+        }{
+            carClient.updateCar(carCreateDto);
+        }
     }
 
     public void saveCar(CarCreateDto carCreateDto, String username) {

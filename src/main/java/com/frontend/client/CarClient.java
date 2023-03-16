@@ -68,4 +68,17 @@ public class CarClient {
             LOGGER.error(e.getMessage(), e);
         }
     }
+
+    public void updateCar(CarCreateDto carCreateDto) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiEndpoint())
+                    .build()
+                    .encode()
+                    .toUri();
+            restTemplate.put(url, carCreateDto);
+            LOGGER.info("Updated car with given id: " + carCreateDto.getId());
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 }

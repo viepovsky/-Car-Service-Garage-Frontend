@@ -1,6 +1,5 @@
 package com.frontend.views.layout;
 
-import com.frontend.client.CarClient;
 import com.frontend.domainDto.request.CarCreateDto;
 import com.frontend.service.CarApiService;
 import com.frontend.service.CarService;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CarForm extends FormLayout {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CarClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CarForm.class);
     private final String currentUsername = "testuser6";
     private CarApiService carApiService;
     private CarService carService;
@@ -31,7 +30,7 @@ public class CarForm extends FormLayout {
     private ComboBox<String> make = new ComboBox<>("Make");
     private ComboBox<String> type = new ComboBox<>("Type");
     private ComboBox<String> model = new ComboBox<>("Model");
-    private TextField engine = new TextField("Engine");
+    private TextField engine = new TextField("Engine type");
     private Button save = new Button("Save");
     private Button edit = new Button("Edit");
     private Button delete = new Button("Delete");
@@ -61,9 +60,9 @@ public class CarForm extends FormLayout {
 
         save.addClickListener(event -> save());
         delete.addClickListener(event -> delete());
-        refresh.addClickListener(event -> refreshModels());
-        edit.addClickListener(event -> editRecord());
-        cancel.addClickListener(event -> cancelRecord());
+        refresh.addClickListener(event -> refreshCarModels());
+        edit.addClickListener(event -> edit());
+        cancel.addClickListener(event -> cancel());
 
         binder.addValueChangeListener( event -> {
             CarCreateDto carCreateDto = new CarCreateDto(binder.getBean());
@@ -76,75 +75,85 @@ public class CarForm extends FormLayout {
         });
     }
 
-    private void cancelRecord() {
-        LOGGER.info("Button cancel clicked");
-        carView.refresh();
-        setCarCreateDto(null);
-    }
-
-    private void editRecord() {
-        CarCreateDto carCreateDto = binder.getBean();
-        LOGGER.info("Car: " + carCreateDto);
-
-        LOGGER.info("Button edit clicked");
-        carView.refresh();
-        setCarCreateDto(null);
-    }
-
     public void setCarCreateDto(CarCreateDto carCreateDto) {
     if (carCreateDto == null) {
         setVisible(false);
     } else if (carCreateDto.equals(new CarCreateDto())) {
         model.setItems(new ArrayList<>());
         binder.setBean(new CarCreateDto());
+
         save.setVisible(true);
         cancel.setVisible(true);
-        delete.setVisible(false);
-        edit.setVisible(false);
         refresh.setVisible(true);
+        edit.setVisible(false);
+        delete.setVisible(false);
+
         setVisible(true);
-        year.focus();
+        year.setItems(carApiService.getCarYears());
     } else {
         binder.setBean(new CarCreateDto());
         List<String> modelList = carApiService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
         model.setItems(modelList);
+        temporaryDto = new CarCreateDto(carCreateDto);
         binder.setBean(carCreateDto);
+
         save.setVisible(false);
-        cancel.setVisible(false);
-        delete.setVisible(true);
+        cancel.setVisible(true);
+        refresh.setVisible(true);
         edit.setVisible(true);
-        refresh.setVisible(false);
+        delete.setVisible(true);
+
         setVisible(true);
         year.focus();
     }
 }
 
-    private void save() {
-        CarCreateDto carCreateDto = binder.getBean();
-        LOGGER.info("Car: " + carCreateDto);
-//        carService.saveCar(carCreateDto, currentUsername);
-        LOGGER.info("Button save clicked");
+    private void cancel() {
+        LOGGER.info("Button cancel clicked");
         carView.refresh();
         setCarCreateDto(null);
+    }
+
+    private void edit() {
+        CarCreateDto carCreateDto = binder.getBean();
+        if (binder.writeBeanIfValid(carCreateDto)){
+            carService.updateCar(carCreateDto);
+            carView.refresh();
+            setCarCreateDto(null);
+        } else {
+            Notification.show("All fields must be valid if you want to edit your car.");
+        }
+        LOGGER.info("Button edit clicked with object: " + carCreateDto);
+    }
+
+    private void save() {
+        CarCreateDto carCreateDto = binder.getBean();
+        if (binder.writeBeanIfValid(carCreateDto)){
+            carService.saveCar(carCreateDto, currentUsername);
+            carView.refresh();
+            setCarCreateDto(null);
+        } else {
+            Notification.show("All fields must be valid if you want to add a new car.");
+        }
+        LOGGER.info("Button save clicked with object: " + carCreateDto);
     }
 
     private void delete() {
         CarCreateDto carCreateDto = binder.getBean();
-        LOGGER.info("Car: " + carCreateDto);
-//        carService.deleteCar(carCreateDto.getId());
-        LOGGER.info("Button delete clicked");
+        carService.deleteCar(carCreateDto.getId());
+        LOGGER.info("Button delete clicked with object: " + carCreateDto);
         carView.refresh();
         setCarCreateDto(null);
     }
 
-    private void refreshModels() {
+    private void refreshCarModels() {
         CarCreateDto carCreateDto = new CarCreateDto(binder.getBean());
-        LOGGER.info("Clicked refresh button with values: " + carCreateDto);
+        LOGGER.info("Clicked refresh button with object: " + carCreateDto);
         if (carCreateDto.getYear() > 1950 && carCreateDto.getMake() != null && carCreateDto.getType() != null ){
             List<String> modelList = carApiService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
             model.setItems(modelList);
             Notification.show("You can pick your car model now.");
-            this.temporaryDto = new CarCreateDto(carCreateDto);
+            temporaryDto = new CarCreateDto(carCreateDto);
         } else {
             Notification.show("You need to pick year, make and type in order to refresh model.");
         }
