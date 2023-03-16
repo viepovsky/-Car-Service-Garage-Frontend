@@ -28,4 +28,13 @@ public class CarDto {
 
     @JsonProperty("engine")
     private String engine;
+
+    public CarDto(CarDto carDto) {
+        this.id = carDto.getId();
+        this.make = carDto.getMake();
+        this.model = carDto.getModel();
+        this.year = carDto.getYear();
+        this.type = carDto.getType();
+        this.engine = carDto.getEngine();
+    }
 }

@@ -53,6 +53,6 @@ public class CarView extends VerticalLayout {
         grid.asSingleSelect().addValueChangeListener(event -> form.setCarCreateDto(grid.asSingleSelect().getValue()));
     }
     public void refresh() {
-        grid.setItems(carService.getCarsForGivenUsername(currentUsername));
+        grid.setItems(carService.getMappedCarsForGivenUsername(currentUsername));
     }
 }

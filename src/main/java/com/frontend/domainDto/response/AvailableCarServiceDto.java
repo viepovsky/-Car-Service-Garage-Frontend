@@ -6,23 +6,31 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GarageDto {
+public class AvailableCarServiceDto {
     @JsonProperty("id")
     private Long id;
 
     @JsonProperty("name")
     private String name;
 
-    @JsonProperty("address")
-    private String address;
+    @JsonProperty("description")
+    private String description;
 
-    public GarageDto(GarageDto garageDto) {
-        this.id = garageDto.getId();
-        this.name = garageDto.getName();
-        this.address = garageDto.getAddress();
-    }
+    @JsonProperty("cost")
+    private BigDecimal cost;
+
+    @JsonProperty("repairTimeInMinutes")
+    private int repairTimeInMinutes;
+
+    @JsonProperty("premiumMakes")
+    private String premiumMakes;
+
+    @JsonProperty("makeMultiplier")
+    private BigDecimal makeMultiplier;
 }

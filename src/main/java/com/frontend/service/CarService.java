@@ -3,6 +3,7 @@ package com.frontend.service;
 import com.frontend.client.CarClient;
 import com.frontend.domainDto.request.CarCreateDto;
 import com.frontend.domainDto.response.CarDto;
+import com.frontend.mapper.CarMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,24 +17,21 @@ import java.util.List;
 public class CarService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarService.class);
     private final CarClient carClient;
+    private final CarMapper carMapper;
 
-    public List<CarCreateDto> getCarsForGivenUsername(String username) {
+    public List<CarDto> getCarsForGivenUsername(String username) {
         if (username == null) {
             LOGGER.error("Given username is invalid.");
             return new ArrayList<>();
         }
         List<CarDto> carDtoList = carClient.getCarsForGivenUsername(username);
         LOGGER.info("Retrieved car list with size of: " + carDtoList.size());
-        return carDtoList.stream()
-                .map(n -> new CarCreateDto(
-                        n.getId(),
-                        n.getMake(),
-                        n.getModel(),
-                        n.getYear(),
-                        n.getType(),
-                        n.getEngine()
-                ))
-                .toList();
+        return carDtoList;
+    }
+
+    public List<CarCreateDto> getMappedCarsForGivenUsername (String username) {
+        List<CarDto> carDtoList = getCarsForGivenUsername(username);
+        return carMapper.mapToCarCreateDtoList(carDtoList);
     }
 
     public void updateCar(CarCreateDto carCreateDto) {
@@ -43,7 +41,6 @@ public class CarService {
         }{
             carClient.updateCar(carCreateDto);
             LOGGER.info("Car with id {} has been updated.", carCreateDto.getId());
-
         }
     }
 
