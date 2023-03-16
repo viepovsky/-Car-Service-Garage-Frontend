@@ -2,9 +2,7 @@ package com.frontend.client;
 
 import com.frontend.config.BackendConfig;
 import com.frontend.domainDto.request.CarCreateDto;
-import com.frontend.domainDto.request.RegisterUserDto;
 import com.frontend.domainDto.response.CarDto;
-import com.frontend.domainDto.response.UserLoginDto;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +48,6 @@ public class CarClient {
                     .encode()
                     .toUri();
             restTemplate.postForObject(url, carCreateDto, Void.class);
-            LOGGER.info("Created car for given username: " + username);
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -63,7 +60,6 @@ public class CarClient {
                     .encode()
                     .toUri();
             restTemplate.delete(url);
-            LOGGER.info("Deleted with given id: " + carId);
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -76,7 +72,6 @@ public class CarClient {
                     .encode()
                     .toUri();
             restTemplate.put(url, carCreateDto);
-            LOGGER.info("Updated car with given id: " + carCreateDto.getId());
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
         }

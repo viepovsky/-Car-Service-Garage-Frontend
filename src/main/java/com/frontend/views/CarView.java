@@ -13,12 +13,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @AnonymousAllowed
 @Route(value = "/cars", layout = MainLayout.class)
-@PageTitle("Car Page | Garage Booking Service")
+@PageTitle("Cars | Garage Booking Service")
 public class CarView extends VerticalLayout {
     private final String currentUsername = "testuser6"; //SecurityContextHolder.getContext().getAuthentication().getName();
     private final CarService carService;

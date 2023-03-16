@@ -1,6 +1,7 @@
 package com.frontend.views.layout;
 
 import com.frontend.security.SecurityService;
+import com.frontend.views.BookView;
 import com.frontend.views.CarView;
 import com.frontend.views.MainView;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -43,9 +44,13 @@ public class MainLayout extends AppLayout {
         RouterLink carView = new RouterLink("Car", CarView.class);
         carView.setHighlightCondition(HighlightConditions.sameLocation());
 
+        RouterLink bookView = new RouterLink("Book", BookView.class);
+        bookView.setHighlightCondition(HighlightConditions.sameLocation());
+
         addToDrawer(new VerticalLayout(
                 mainView,
-                carView
+                carView,
+                bookView
         ));
     }
 

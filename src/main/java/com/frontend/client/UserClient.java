@@ -29,6 +29,7 @@ public class UserClient {
                     .toUri();
             return restTemplate.getForObject(url, UserLoginDto.class);
         } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
             return null;
         }
     }
@@ -40,9 +41,8 @@ public class UserClient {
                     .encode()
                     .toUri();
             restTemplate.postForObject(url, registerUserDto, Void.class);
-            LOGGER.info("Created user with given username: " + registerUserDto.getUsername() );
         } catch (RestClientException e) {
-            LOGGER.error("Error while creating user.", e);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -53,10 +53,9 @@ public class UserClient {
                     .build()
                     .encode()
                     .toUri();
-            LOGGER.info("Checking if account with username: " + username + " exists.");
             return restTemplate.getForObject(url, Boolean.class);
         } catch (RestClientException e) {
-            LOGGER.error("Error while checking if account with username: " + username + " exists.", e);
+            LOGGER.error(e.getMessage(), e);
             return true;
         }
     }

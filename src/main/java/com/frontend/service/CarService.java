@@ -23,6 +23,7 @@ public class CarService {
             return new ArrayList<>();
         }
         List<CarDto> carDtoList = carClient.getCarsForGivenUsername(username);
+        LOGGER.info("Retrieved car list with size of: " + carDtoList.size());
         return carDtoList.stream()
                 .map(n -> new CarCreateDto(
                         n.getId(),
@@ -41,24 +42,28 @@ public class CarService {
             return;
         }{
             carClient.updateCar(carCreateDto);
+            LOGGER.info("Car with id {} has been updated.", carCreateDto.getId());
+
         }
     }
 
     public void saveCar(CarCreateDto carCreateDto, String username) {
         if (carCreateDto == null) {
-            LOGGER.error("Given object for save is null.");
+            LOGGER.error("Cannot save null car.");
             return;
         }{
             carClient.saveCar(carCreateDto, username);
+            LOGGER.info("Car with ID {} has been saved.", carCreateDto.getId());
         }
     }
 
     public void deleteCar(Long carId) {
         if (carId == null || carId < 0) {
-            LOGGER.error("Given car id is invalid.");
+            LOGGER.error("Cannot delete car when id is invalid.");
             return;
         }{
             carClient.deleteCar(carId);
+            LOGGER.info("Car with ID {} has been deleted.", carId);
         }
     }
 
