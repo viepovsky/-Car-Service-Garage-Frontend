@@ -42,4 +42,22 @@ public class BookingClient {
             return new ArrayList<>();
         }
     }
+
+    public void saveBooking(List<Long> selectedServiceIdList, LocalDate date, LocalTime startHour, Long garageId, Long carId, int repairDuration) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getBookingApiEndpoint())
+                    .queryParam("service-id", selectedServiceIdList)
+                    .queryParam("date", date.toString())
+                    .queryParam("start-hour", startHour)
+                    .queryParam("garage-id", garageId)
+                    .queryParam("car-id", carId)
+                    .queryParam("repair-duration", repairDuration)
+                    .build()
+                    .encode()
+                    .toUri();
+            restTemplate.postForObject(url, null, Void.class);
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 }

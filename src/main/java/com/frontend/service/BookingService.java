@@ -22,4 +22,9 @@ public class BookingService {
         return localTimeList;
     }
 
+    public void saveBooking(List<Long> selectedServiceIdList, LocalDate date, LocalTime startHour, Long garageId, Long carId, int repairDuration) {
+        LOGGER.info("Saving booking and related carServices.");
+        bookingClient.saveBooking(selectedServiceIdList, date, startHour, garageId, carId, repairDuration);
+    }
+
 }

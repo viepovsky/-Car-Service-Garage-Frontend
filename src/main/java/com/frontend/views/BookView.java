@@ -11,8 +11,10 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -45,9 +47,9 @@ public class BookView extends VerticalLayout {
     private CarDto selectedCar;
     private Set<AvailableCarServiceDto> selectedServices;
     private LocalDate selectedDate;
+    private LocalTime selectedStartTime;
     private int totalRepairTime;
     private Paragraph garageText = new Paragraph("Here you can book your services, first select garage by clicking it.");
-
     private Grid<GarageDto> garageGrid = new Grid<>(GarageDto.class, false);
     private VerticalLayout garageLayout = new VerticalLayout(garageText, garageGrid);
     private Paragraph carText = new Paragraph("If you have already selected garage, now pick your car below:");
@@ -59,12 +61,18 @@ public class BookView extends VerticalLayout {
     private VerticalLayout serviceLayout = new VerticalLayout(serviceText, serviceGrid, confirmServiceButton);
     private Accordion preparedBookingDetails = new Accordion();
     private Button backButton = new Button("Click to go back and change services");
+    private VerticalLayout detailsLayout = new VerticalLayout();
     private Paragraph dateText = new Paragraph("Now select the date you would like to have your car serviced.");
     private DatePicker datePicker = new DatePicker("Service date:");
     private VerticalLayout dateLayout = new VerticalLayout(dateText, datePicker);
+    private Paragraph addBookText = new Paragraph("Finally, select service time:");
     private ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
-    private Button addBooking = new Button("Click to book the service.");
-    private VerticalLayout bookLayout = new VerticalLayout(timePicker, addBooking);
+    private Button addBookButton = new Button("Click to book the service.");
+    private VerticalLayout bookLayout = new VerticalLayout(addBookText, timePicker, addBookButton);
+    private H2 thankYouText = new H2("Your appointment has been successfully scheduled.");
+    private Paragraph endText = new Paragraph("Thank you for using our car service booking system.");
+    private Paragraph endText2 = new Paragraph("You can check your upcoming and previous appointments in the 'Booking' tab in the drawer.");
+
 
     public BookView(GarageService garageService, CarService carService, AvailableServiceCarService availableServiceCarService, ServiceCarService serviceCarService, BookingService bookingService) {
         this.garageService = garageService;
@@ -75,8 +83,7 @@ public class BookView extends VerticalLayout {
 
         carLayout.setVisible(false);
         serviceLayout.setVisible(false);
-        preparedBookingDetails.setVisible(false);
-        backButton.setVisible(false);
+        detailsLayout.setVisible(false);
         dateLayout.setVisible(false);
         bookLayout.setVisible(false);
         setSpacing(false);
@@ -156,7 +163,6 @@ public class BookView extends VerticalLayout {
                 garageLayout.setVisible(false);
                 carLayout.setVisible(false);
                 serviceLayout.setVisible(false);
-                preparedBookingDetails.setVisible(true);
 
                 Span garageDetails = new Span(selectedGarage.getName() + ", " + selectedGarage.getAddress());
                 preparedBookingDetails.add("Selected garage", garageDetails);
@@ -177,11 +183,12 @@ public class BookView extends VerticalLayout {
                 serviceTotal.addClassNames(LumoUtility.Margin.Top.MEDIUM, LumoUtility.FontWeight.BOLD);
                 serviceDetailsLayout.add(serviceTotal);
                 preparedBookingDetails.add("Selected services",serviceDetailsLayout);
-                add(preparedBookingDetails);
-                add(backButton);
+                detailsLayout.removeAll();
+                detailsLayout.add(preparedBookingDetails, backButton);
+                add(detailsLayout);
                 add(dateLayout);
                 add(bookLayout);
-                backButton.setVisible(true);
+                detailsLayout.setVisible(true);
                 dateLayout.setVisible(true);
                 bookLayout.setVisible(true);
 
@@ -206,10 +213,10 @@ public class BookView extends VerticalLayout {
             garageLayout.setVisible(true);
             carLayout.setVisible(true);
             serviceLayout.setVisible(true);
-            preparedBookingDetails.setVisible(false);
-            backButton.setVisible(false);
+            detailsLayout.setVisible(false);
             preparedBookingDetails = new Accordion();
             selectedDate = null;
+            selectedStartTime = null;
             datePicker.setValue(null);
             dateLayout.setVisible(false);
             timePicker.setValue(null);
@@ -217,8 +224,8 @@ public class BookView extends VerticalLayout {
 
         });
         backButton.addClassName(LumoUtility.Margin.Top.LARGE);
-        preparedBookingDetails.setMaxWidth("600px");
-        preparedBookingDetails.setWidthFull();
+        detailsLayout.setMaxWidth("600px");
+        detailsLayout.setWidthFull();
 
         dateText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE);
         LocalDate now = LocalDate.now();
@@ -246,9 +253,30 @@ public class BookView extends VerticalLayout {
                 LOGGER.info("Given parameters to get available times, date: " + selectedDate + ", total repair time: " + totalRepairTime + ", garage id: " + selectedGarage.getId());
             }
         });
-
+        addBookText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE);
         timePicker.setMaxWidth("300px");
         timePicker.setWidthFull();
-
+        timePicker.addValueChangeListener(event -> {
+            selectedStartTime = timePicker.getValue();
+            LOGGER.info("Button book clicked, selected time: " + selectedStartTime);
+        });
+        addBookButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        addBookButton.addClickListener(event -> {
+            LOGGER.info("Button save clicked.");
+            if (selectedDate != null && selectedStartTime != null) {
+                detailsLayout.setVisible(false);
+                dateLayout.setVisible(false);
+                bookLayout.setVisible(false);
+                List<Long> selectedServicesIdList = selectedServices.stream().map(AvailableCarServiceDto::getId).toList();
+                bookingService.saveBooking(selectedServicesIdList, selectedDate, selectedStartTime, selectedGarage.getId(), selectedCar.getId(), totalRepairTime);
+                add(thankYouText);
+                add(endText);
+                add(endText2);
+            } else {
+                Notification.show("First select date and time.");
+            }
+        });
+        endText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.XSMALL);
+        endText2.addClassName(LumoUtility.Margin.Top.XSMALL);
     }
 }
