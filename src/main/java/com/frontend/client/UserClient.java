@@ -2,6 +2,7 @@ package com.frontend.client;
 
 import com.frontend.config.BackendConfig;
 import com.frontend.domainDto.request.RegisterUserDto;
+import com.frontend.domainDto.response.UserDto;
 import com.frontend.domainDto.response.UserLoginDto;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class UserClient {
     private final RestTemplate restTemplate;
     private final BackendConfig backendConfig;
 
-    public UserLoginDto getUser(String username) {
+    public UserLoginDto getUserToLogin(String username) {
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getUserApiEndpoint())
                     .queryParam("username", username)
@@ -28,6 +29,20 @@ public class UserClient {
                     .encode()
                     .toUri();
             return restTemplate.getForObject(url, UserLoginDto.class);
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public UserDto getUser(String username) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getUserApiEndpoint() + "/information")
+                    .queryParam("username", username)
+                    .build()
+                    .encode()
+                    .toUri();
+            return restTemplate.getForObject(url, UserDto.class);
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
             return null;

@@ -1,7 +1,7 @@
 package com.frontend.views;
 
 import com.frontend.domainDto.request.RegisterUserDto;
-import com.frontend.service.RegisterService;
+import com.frontend.service.LoginRegisterService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -26,7 +26,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 @PageTitle("Register | Garage Booking Service")
 @AnonymousAllowed
 public class RegisterView extends VerticalLayout {
-    private final RegisterService registerService;
+    private final LoginRegisterService loginRegisterService;
     private final Binder<RegisterUserDto> binder = new BeanValidationBinder<>(RegisterUserDto.class);
     private TextField firstName = new TextField("First name");
     private TextField lastName = new TextField("Last name");
@@ -38,12 +38,12 @@ public class RegisterView extends VerticalLayout {
     private Button loginButton = new Button("Log in here if you already have account.");
     private VerticalLayout centerFormLayout = new VerticalLayout();
 
-    public RegisterView(RegisterService registerService) {
-        this.registerService = registerService;
+    public RegisterView(LoginRegisterService loginRegisterService) {
+        this.loginRegisterService = loginRegisterService;
         centerFormLayout.setAlignItems(Alignment.CENTER);
         centerFormLayout.setSizeFull();
         binder.bindInstanceFields(this);
-//        add(new H1("Welcome in Garage Booking Service!"));
+
         H1 h1 = new H1("Welcome in Garage Booking Service!");
         h1.addClassName(LumoUtility.Margin.Horizontal.AUTO);
         add(h1);
@@ -73,10 +73,10 @@ public class RegisterView extends VerticalLayout {
         createUserButton.addClickListener(e -> {
             RegisterUserDto registerUserDto = new RegisterUserDto();
             if (binder.writeBeanIfValid(registerUserDto)){
-                if(registerService.isRegistered(registerUserDto.getUsername())){
+                if(loginRegisterService.isRegistered(registerUserDto.getUsername())){
                     Notification.show("Account with given username: " + registerUserDto.getUsername() + " already exist. Change the username in order to register new account.");
                 } else {
-                    registerService.createUser(registerUserDto);
+                    loginRegisterService.createUser(registerUserDto);
                     Notification.show("Account created, you can log in now.");
                     clearForm();
                 }

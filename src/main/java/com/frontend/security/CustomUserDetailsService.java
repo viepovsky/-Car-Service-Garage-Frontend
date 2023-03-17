@@ -1,7 +1,7 @@
 package com.frontend.security;
 
-import com.frontend.client.UserClient;
 import com.frontend.domainDto.response.UserLoginDto;
+import com.frontend.service.LoginRegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserClient userClient;
+    private final LoginRegisterService loginRegisterService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserLoginDto user = userClient.getUser(username);
+        UserLoginDto user = loginRegisterService.getUser(username);
         if(user ==null) {
             throw new UsernameNotFoundException("User Not Found");
         }
