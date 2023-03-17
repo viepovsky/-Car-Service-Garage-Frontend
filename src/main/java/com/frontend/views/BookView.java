@@ -34,7 +34,7 @@ import java.util.Set;
 
 @AnonymousAllowed
 @Route(value = "/book", layout = MainLayout.class)
-@PageTitle("Book services | Garage Booking Service")
+@PageTitle("Book a service | Garage Booking Service")
 public class BookView extends VerticalLayout {
     private final String currentUsername = "testuser6"; //SecurityContextHolder.getContext().getAuthentication().getName();
     private static final Logger LOGGER = LoggerFactory.getLogger(BookView.class);
@@ -72,8 +72,6 @@ public class BookView extends VerticalLayout {
     private H2 thankYouText = new H2("Your appointment has been successfully scheduled.");
     private Paragraph endText = new Paragraph("Thank you for using our car service booking system.");
     private Paragraph endText2 = new Paragraph("You can check your upcoming and previous appointments in the 'Booking' tab in the drawer.");
-
-
     public BookView(GarageService garageService, CarService carService, AvailableServiceCarService availableServiceCarService, ServiceCarService serviceCarService, BookingService bookingService) {
         this.garageService = garageService;
         this.carService = carService;

@@ -19,14 +19,14 @@ public class MainView extends VerticalLayout {
     public MainView() {
         setSpacing(false);
 
-        H1 header = new H1("Welcome to Garage Booking Service!");
+        H1 header = new H1("Welcome to our Garage Booking Service!");
         header.addClassNames(LumoUtility.Margin.Top.XSMALL, LumoUtility.Margin.Bottom.MEDIUM);
         add(header);
-        add(new Paragraph("Here you can book a service in your favourite car workshop"));
-        add(new Paragraph("To start you must add your car details, you can make it by choosing the tab named CAR."));
-        add(new Paragraph("Next, in the ORDER tab, select the garage you would like your car to be repaired and services that should be done."));
-        add(new Paragraph("Then in BOOK tab you can choose a day and time to book service."));
-        add(new Paragraph("And that's it! It's just that simple, now prepare to have your car repaired"));
+        add(new Paragraph("To get started, add your car details by selecting the \"Cars\" tab."));
+        add(new Paragraph("Next, go to the \"Book a service\" tab to choose your preferred workshop and the services you would like to have performed."));
+        add(new Paragraph("You can then choose a date and time for your appointment."));
+        add(new Paragraph("You can always check your upcoming and past services in the \"My Services\" tab."));
+        add(new Paragraph("It's that simple! Prepare to have your car serviced or repaired by our skilled professionals."));
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.START);
         setDefaultHorizontalComponentAlignment(Alignment.START);
