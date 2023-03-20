@@ -2,6 +2,8 @@ package com.frontend.client;
 
 import com.frontend.config.BackendConfig;
 import com.frontend.domainDto.request.RegisterUserDto;
+import com.frontend.domainDto.request.UpdateUserDto;
+import com.frontend.domainDto.response.PasswordDto;
 import com.frontend.domainDto.response.UserDto;
 import com.frontend.domainDto.response.UserLoginDto;
 import lombok.AllArgsConstructor;
@@ -21,7 +23,7 @@ public class UserClient {
     private final RestTemplate restTemplate;
     private final BackendConfig backendConfig;
 
-    public UserLoginDto getUserToLogin(String username) {
+    public UserLoginDto getUserForLogin(String username) {
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getUserApiEndpoint())
                     .queryParam("username", username)
@@ -72,6 +74,32 @@ public class UserClient {
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
             return true;
+        }
+    }
+
+    public PasswordDto getPassword(String username) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getUserApiEndpoint() + "/pass")
+                    .queryParam("username", username)
+                    .build()
+                    .encode()
+                    .toUri();
+            return restTemplate.getForObject(url, PasswordDto.class);
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
+            return new PasswordDto();
+        }
+    }
+
+    public void updateUser(UpdateUserDto updateUserDto) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getUserApiEndpoint())
+                    .build()
+                    .encode()
+                    .toUri();
+            restTemplate.put(url, updateUserDto);
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }

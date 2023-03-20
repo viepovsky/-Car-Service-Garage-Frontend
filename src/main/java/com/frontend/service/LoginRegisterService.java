@@ -17,7 +17,7 @@ public class LoginRegisterService {
     private final UserClient userClient;
     public UserLoginDto getUser(String username) {
         LOGGER.info("Retrieving data about user with username: " + username);
-        return userClient.getUserToLogin(username);
+        return userClient.getUserForLogin(username);
     }
 
     public void createUser(RegisterUserDto registerUserDto) {
