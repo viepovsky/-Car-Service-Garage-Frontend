@@ -14,6 +14,8 @@ public class UserService {
     private final UserClient userClient;
     public UserDto getUser(String username) {
         LOGGER.info("Retrieving data about user with username: " + username);
-        return userClient.getUser(username);
+        UserDto userDto = userClient.getUser(username);
+        LOGGER.info("Retrieved user: " + userDto);
+        return userDto;
     }
 }

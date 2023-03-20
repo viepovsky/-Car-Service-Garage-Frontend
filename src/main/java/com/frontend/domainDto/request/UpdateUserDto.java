@@ -27,6 +27,8 @@ public class UpdateUserDto {
 
     private String username;
 
-    @Pattern(regexp = "(?=.*[A-Z])(?=.*[\\W])(?=\\S+$).{8,}", message = "Password should contain at least 8 characters, one uppercase letter, and one special character.")
+    @NotBlank
     private String password;
+
+    private String newPassword;
 }
