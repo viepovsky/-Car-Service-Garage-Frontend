@@ -20,10 +20,11 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@AnonymousAllowed
+@PermitAll
 @Route(value = "/services", layout = MainLayout.class)
 @PageTitle("My Services | Garage Booking Service")
 public class ServiceView extends Div {
-    private final String currentUsername = "testuser6"; //SecurityContextHolder.getContext().getAuthentication().getName();
+    private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceView.class);
     private ServiceCarService serviceCarService;
     private BookingService bookingService;

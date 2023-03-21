@@ -13,13 +13,15 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.PermitAll;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-@AnonymousAllowed
+@PermitAll
 @Route(value = "/cars", layout = MainLayout.class)
 @PageTitle("Cars | Garage Booking Service")
 public class CarView extends VerticalLayout {
-    private final String currentUsername = "testuser6"; //SecurityContextHolder.getContext().getAuthentication().getName();
+    private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     private final CarService carService;
     private final CarApiService carApiService;
     private final CarForm form;
@@ -44,6 +46,9 @@ public class CarView extends VerticalLayout {
         grid.setSizeFull();
 
         setSpacing(false);
+        Paragraph information = new Paragraph("This page works slower than the others, and that's intentional because the car API it uses only accepts one request per second in the free version.");
+        information.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.LARGE);
+        add(information);
         add(new Paragraph("Here you have got access to all your cars, you can add, edit or delete them."));
         add(new Paragraph("To book services, you must have at least one car added."));
 
