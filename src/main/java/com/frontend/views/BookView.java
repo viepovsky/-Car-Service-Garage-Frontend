@@ -3,6 +3,7 @@ package com.frontend.views;
 import com.frontend.domainDto.response.AvailableCarServiceDto;
 import com.frontend.domainDto.response.CarDto;
 import com.frontend.domainDto.response.GarageDto;
+import com.frontend.domainDto.response.GarageWorkTimeDto;
 import com.frontend.service.*;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -11,10 +12,12 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -28,10 +31,8 @@ import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @AnonymousAllowed
 @Route(value = "/book", layout = MainLayout.class)
@@ -53,6 +54,7 @@ public class BookView extends VerticalLayout {
     private Paragraph garageText = new Paragraph("Here you can book your services, first select garage by clicking it.");
     private Grid<GarageDto> garageGrid = new Grid<>(GarageDto.class, false);
     private VerticalLayout garageLayout = new VerticalLayout(garageText, garageGrid);
+    private HorizontalLayout garageBigLayout = new HorizontalLayout();
     private Paragraph carText = new Paragraph("If you have already selected garage, now pick your car below:");
     private ComboBox<CarDto> carComboBox = new ComboBox<>("Select your car:");
     private VerticalLayout carLayout = new VerticalLayout(carText, carComboBox);
@@ -87,6 +89,7 @@ public class BookView extends VerticalLayout {
         bookLayout.setVisible(false);
         setSpacing(false);
 
+        VerticalLayout garageWorkTimes = new VerticalLayout();
         garageGrid.addColumn(GarageDto::getName).setHeader("Garage name").setSortable(true);
         garageGrid.addColumn(GarageDto::getAddress).setHeader("Address").setSortable(true);
         List<GarageDto> garageDtoList = garageService.getGarages();
@@ -95,6 +98,8 @@ public class BookView extends VerticalLayout {
             Optional<GarageDto> optionalGarage = selection.getFirstSelectedItem();
             if (optionalGarage.isPresent()) {
                 selectedGarage = new GarageDto(optionalGarage.get());
+                garageWorkTimes.setVisible(true);
+                setGarageWorkTimes(garageWorkTimes, selectedGarage);
                 LOGGER.info("Selected garage: " + selectedGarage);
                 carLayout.setVisible(true);
                 List<AvailableCarServiceDto> serviceList = availableServiceCarService.getAllAvailableServices(selectedGarage.getId());
@@ -112,15 +117,20 @@ public class BookView extends VerticalLayout {
             } else {
                 carLayout.setVisible(false);
                 serviceLayout.setVisible(false);
+                garageWorkTimes.setVisible(false);
                 selectedGarage = null;
                 selectedCar = null;
                 carComboBox.setValue(null);
             }
         });
         garageGrid.setMaxHeight("250px");
+        garageGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         garageLayout.setMaxWidth("1000px");
         garageLayout.setWidthFull();
-        add(garageLayout);
+        garageBigLayout.setWidthFull();
+        garageBigLayout.setAlignItems(Alignment.END);
+        garageBigLayout.add(garageLayout, garageWorkTimes);
+        add(garageBigLayout);
 
         carText.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Margin.Bottom.NONE);
         carComboBox.setItems(carService.getCarsForGivenUsername(currentUsername));
@@ -159,7 +169,7 @@ public class BookView extends VerticalLayout {
                 LOGGER.info("selected garage: " + selectedGarage);
                 LOGGER.info("selected car: " + selectedCar);
                 LOGGER.info("selected services id: " + selectedServices.stream().map(AvailableCarServiceDto::getId).toList());
-                garageLayout.setVisible(false);
+                garageBigLayout.setVisible(false);
                 carLayout.setVisible(false);
                 serviceLayout.setVisible(false);
 
@@ -203,13 +213,14 @@ public class BookView extends VerticalLayout {
             LOGGER.info("Selected services id: " + selectedServices.stream().map(AvailableCarServiceDto::getId).toList());
         });
         serviceGrid.setMaxHeight("250px");
+        serviceGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         serviceLayout.setMaxWidth("1000px");
         serviceLayout.setWidthFull();
         add(serviceLayout);
 
         backButton.addClickListener(event -> {
             LOGGER.info("Back button clicked.");
-            garageLayout.setVisible(true);
+            garageBigLayout.setVisible(true);
             carLayout.setVisible(true);
             serviceLayout.setVisible(true);
             detailsLayout.setVisible(false);
@@ -277,5 +288,25 @@ public class BookView extends VerticalLayout {
         });
         endText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.XSMALL);
         endText2.addClassName(LumoUtility.Margin.Top.XSMALL);
+    }
+
+    private void setGarageWorkTimes(VerticalLayout garageWorkTimes, GarageDto selectedGarage) {
+        garageWorkTimes.removeAll();
+        Span span = new Span("Garage: " + selectedGarage.getName() + " opens:");
+        span.addClassNames(LumoUtility.FontWeight.BOLD);
+        garageWorkTimes.add(span);
+        for (GarageWorkTimeDto workTime : selectedGarage.getGarageWorkTimeDtoList()) {
+            if (!Objects.equals(workTime.getStartHour(), workTime.getEndHour())){
+                span = new Span(workTime.getDay().substring(0, 1).toUpperCase() + workTime.getDay().substring(1).toLowerCase() + "s: " +
+                        workTime.getStartHour().format(DateTimeFormatter.ofPattern("HH:mm")) +
+                        " till " +
+                        workTime.getEndHour().format(DateTimeFormatter.ofPattern("HH:mm")));
+                garageWorkTimes.add(span);
+            } else {
+                span = new Span(workTime.getDay().substring(0, 1).toUpperCase() + workTime.getDay().substring(1).toLowerCase() + "s: closed.");
+                garageWorkTimes.add(span);
+            }
+        }
+        garageWorkTimes.setSpacing(false);
     }
 }

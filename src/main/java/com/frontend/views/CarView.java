@@ -7,6 +7,7 @@ import com.frontend.views.layout.CarForm;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -30,6 +31,7 @@ public class CarView extends VerticalLayout {
         form = new CarForm(carApiService, carService, this);
 
         grid.setColumns("make", "model", "year", "type", "engine");
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 
         addNewCar.addClickListener(e -> {
             grid.asSingleSelect().clear();

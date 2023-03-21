@@ -7,6 +7,7 @@ import com.frontend.domainDto.response.GarageDto;
 import com.frontend.service.ServiceCarService;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -31,13 +32,15 @@ public class ServiceView extends Div {
     private final String currentUsername = "testuser6"; //SecurityContextHolder.getContext().getAuthentication().getName();
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceView.class);
     private ServiceCarService serviceCarService;
-    private Grid<CarServiceDto> incomingServiceGrid = new Grid<>(CarServiceDto.class, false);
     private CarDto carDto;
     private BookingDto bookingDto;
     private GarageDto garageDto;
     private List<CarServiceDto> carServiceDtoList;
+    private Grid<CarServiceDto> incomingGrid = new Grid<>(CarServiceDto.class, false);
     private List<CarServiceDto> incomingServiceList;
+    private Grid<CarServiceDto> inProgressGrid = new Grid<>(CarServiceDto.class, false);
     private List<CarServiceDto> inProgressServiceList;
+    private Grid<CarServiceDto> completedGrid = new Grid<>(CarServiceDto.class, false);
     private List<CarServiceDto> completedServiceList;
     private final Tab incomingServiceTab;
     private final Tab inProgressTab;
@@ -49,10 +52,10 @@ public class ServiceView extends Div {
         incomingServiceTab = new Tab("Incoming services");
         inProgressTab = new Tab("In progress services");
         completedServiceTab = new Tab("Completed services");
-        Tabs tabs = new Tabs(incomingServiceTab, completedServiceTab);
+        Tabs tabs = new Tabs(incomingServiceTab, inProgressTab, completedServiceTab);
         tabs.addThemeVariants(TabsVariant.LUMO_EQUAL_WIDTH_TABS);
 
-        createColumnsIncomingServicesGrid();
+        formIncomingGrid();
 
         fetchCarServicesFromDb();
         filterCarServiceLists();
@@ -62,19 +65,21 @@ public class ServiceView extends Div {
         addTabsAndLayoutsToView(tabs);
     }
 
-    private void createColumnsIncomingServicesGrid() {
-        incomingServiceGrid.addColumn(CarServiceDto::getCarDto).setHeader("Car").setWidth("200px");
-        incomingServiceGrid.addColumn(CarServiceDto::getName).setHeader("Service name");
-        incomingServiceGrid.addColumn(n -> n.getBookingDto().getDate().atTime(n.getBookingDto().getStartHour()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm:ss")))
-                .setHeader("Date, time").setWidth("120px").setSortable(true);
-        incomingServiceGrid.addColumn(CarServiceDto::getCost).setHeader("Cost [PLN]").setWidth("40px");
-        incomingServiceGrid.addColumn(CarServiceDto::getRepairTimeInMinutes).setHeader("Repair time [min]").setWidth("60px");
-        incomingServiceGrid.addColumn(n -> n.getBookingDto().getGarageDto().getName()).setHeader("Garage name");
-        incomingServiceGrid.addColumn(n -> n.getBookingDto().getGarageDto().getAddress()).setHeader("Garage address").setWidth("160px");
-        incomingServiceGrid.addColumn(CarServiceDto::getStatus).setHeader("Status");
+    private void formIncomingGrid() {
+        incomingGrid.addColumn(CarServiceDto::getCarDto).setHeader("Serviced car").setAutoWidth(true);
+        incomingGrid.addColumn(CarServiceDto::getName).setHeader("Service").setAutoWidth(true);
+        incomingGrid.addColumn(CarServiceDto::getCost).setHeader("Cost [PLN]").setAutoWidth(true).setFlexGrow(0);
+        incomingGrid.addColumn(n -> n.getBookingDto().getDate().atTime(n.getBookingDto().getStartHour()).format(DateTimeFormatter.ofPattern("HH:mm, dd-MM-yyyy")))
+                .setHeader("Start time, date").setAutoWidth(true).setSortable(true);
+        incomingGrid.addColumn(n -> n.getBookingDto().getEndHour()).setHeader("Estimated end time").setAutoWidth(true).setFlexGrow(0).setKey("End");
+        incomingGrid.addColumn(CarServiceDto::getRepairTimeInMinutes).setHeader("Repair time [min]").setAutoWidth(true).setFlexGrow(0);
+        incomingGrid.addColumn(n -> n.getBookingDto().getGarageDto().getName()).setHeader("Garage").setAutoWidth(true);
+        incomingGrid.addColumn(n -> n.getBookingDto().getGarageDto().getAddress()).setHeader("Garage address").setAutoWidth(true);
+        incomingGrid.addColumn(CarServiceDto::getStatus).setHeader("Status").setAutoWidth(true).setFlexGrow(0).setKey("Status");
 
-        incomingServiceGrid.setMaxHeight("300px");
-        incomingServiceGrid.setWidthFull();
+        incomingGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        incomingGrid.setMaxHeight("300px");
+        incomingGrid.setWidthFull();
     }
 
     private void fetchCarServicesFromDb() {
@@ -110,21 +115,26 @@ public class ServiceView extends Div {
 
     private void addTabsAndLayoutsToView(Tabs tabs) {
         add(tabs);
-        incomingServiceGrid.setItems(incomingServiceList);
-        incomingLayout = new VerticalLayout(incomingServiceGrid);
+        incomingGrid.setItems(incomingServiceList);
+        incomingLayout = new VerticalLayout(incomingGrid);
         add(incomingLayout);
     }
 
     private void setGridsVisible(Tab selectedTab) {
-        if (selectedTab == null) {
-            return;
-        }
         if (selectedTab.equals(incomingServiceTab)) {
-            incomingLayout.setVisible(true);
+            incomingGrid.setItems(incomingServiceList);
+            Grid.Column<CarServiceDto> column = incomingGrid.getColumnByKey("End");
+            column.setHeader("Estimated end time");
         } else if (selectedTab.equals(inProgressTab)) {
-            incomingLayout.setVisible(false);
+            incomingGrid.setItems(inProgressServiceList);
+            Grid.Column<CarServiceDto> column = incomingGrid.getColumnByKey("End");
+            column.setHeader("Estimated end time");
         } else if (selectedTab.equals(completedServiceTab)) {
-            incomingLayout.setVisible(false);
+            incomingGrid.setItems(completedServiceList);
+            Grid.Column<CarServiceDto> column = incomingGrid.getColumnByKey("End");
+            column.setHeader("End time");
+            Grid.Column<CarServiceDto> column2 = incomingGrid.getColumnByKey("Status");
+            column2.setFlexGrow(1);
         }
     }
 }

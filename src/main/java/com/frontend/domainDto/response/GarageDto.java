@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,9 +22,12 @@ public class GarageDto {
     @JsonProperty("address")
     private String address;
 
+    @JsonProperty("garageWorkTimeDtoList")
+    private List<GarageWorkTimeDto> garageWorkTimeDtoList;
     public GarageDto(GarageDto garageDto) {
         this.id = garageDto.getId();
         this.name = garageDto.getName();
         this.address = garageDto.getAddress();
+        this.garageWorkTimeDtoList = garageDto.getGarageWorkTimeDtoList();
     }
 }
