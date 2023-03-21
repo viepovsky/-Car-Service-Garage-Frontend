@@ -37,4 +37,9 @@ public class CarDto {
         this.type = carDto.getType();
         this.engine = carDto.getEngine();
     }
+
+    @Override
+    public String toString() {
+        return make + ", " + model + ", " + year + ", " + type + ", " + engine;
+    }
 }

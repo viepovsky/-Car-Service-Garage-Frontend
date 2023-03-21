@@ -48,8 +48,7 @@ public class UserView extends VerticalLayout {
         this.userService = userService;
         userDto = userService.getUser(currentUsername);
 
-
-        bindFields();
+        bindAndValidatePasswordFields();
 
         addForm(userDto);
 
@@ -59,7 +58,7 @@ public class UserView extends VerticalLayout {
         addCreatedDate(userDto);
     }
 
-    private void bindFields() {
+    private void bindAndValidatePasswordFields() {
         binder.bindInstanceFields(this);
 
         Validator<String> currentPasswordValidator = (value, context) -> {

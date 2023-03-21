@@ -28,6 +28,7 @@ import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -195,8 +196,8 @@ public class BookView extends VerticalLayout {
         serviceGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         serviceGrid.addColumn(AvailableCarServiceDto::getName).setHeader("Service").setSortable(true);
         serviceGrid.addColumn(AvailableCarServiceDto::getDescription).setHeader("Description");
-        serviceGrid.addColumn(AvailableCarServiceDto::getCost).setHeader("Cost").setSortable(true);
-        serviceGrid.addColumn(AvailableCarServiceDto::getRepairTimeInMinutes).setHeader("Repair time [minutes]");
+        serviceGrid.addColumn(AvailableCarServiceDto::getCost).setHeader("Cost [PLN]").setSortable(true);
+        serviceGrid.addColumn(AvailableCarServiceDto::getRepairTimeInMinutes).setHeader("Repair time [min]");
         serviceGrid.addSelectionListener(selection -> {
             selectedServices = selection.getAllSelectedItems();
             LOGGER.info("Selected services id: " + selectedServices.stream().map(AvailableCarServiceDto::getId).toList());
@@ -218,6 +219,7 @@ public class BookView extends VerticalLayout {
             datePicker.setValue(null);
             dateLayout.setVisible(false);
             timePicker.setValue(null);
+            timePicker.setItems(new ArrayList<>());
             bookLayout.setVisible(false);
 
         });
@@ -248,7 +250,6 @@ public class BookView extends VerticalLayout {
                 selectedDate = datePicker.getValue();
                 LOGGER.info("Selected book date: " + selectedDate);
                 timePicker.setItems(bookingService.getAvailableBookingTimes(selectedDate, totalRepairTime, selectedGarage.getId()));
-                LOGGER.info("Given parameters to get available times, date: " + selectedDate + ", total repair time: " + totalRepairTime + ", garage id: " + selectedGarage.getId());
             }
         });
         addBookText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE);
@@ -256,7 +257,7 @@ public class BookView extends VerticalLayout {
         timePicker.setWidthFull();
         timePicker.addValueChangeListener(event -> {
             selectedStartTime = timePicker.getValue();
-            LOGGER.info("Button book clicked, selected time: " + selectedStartTime);
+            LOGGER.info("Time picked, selected time: " + selectedStartTime);
         });
         addBookButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         addBookButton.addClickListener(event -> {

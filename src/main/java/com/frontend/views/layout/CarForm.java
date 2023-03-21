@@ -50,6 +50,7 @@ public class CarForm extends FormLayout {
         type.setItems(carApiService.getCarTypes());
 
         HorizontalLayout buttons = new HorizontalLayout(save, edit, delete, cancel);
+        delete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         edit.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         refresh.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

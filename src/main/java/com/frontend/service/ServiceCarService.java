@@ -1,6 +1,7 @@
 package com.frontend.service;
 
 import com.frontend.client.CarServiceClient;
+import com.frontend.domainDto.response.CarServiceDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,5 +18,11 @@ public class ServiceCarService {
     public void addService(List<Long> selectedServicesIdList, Long carId) {
         carServiceClient.addService(selectedServicesIdList, carId);
         LOGGER.info("Added services of given id: " + selectedServicesIdList + " to car of given id: " + carId);
+    }
+
+    public List<CarServiceDto> getCarServices(String username) {
+        List<CarServiceDto> carServiceDtoList = carServiceClient.getCarServices(username);
+        LOGGER.info("Retrieved car services list with size of: " + carServiceDtoList.size());
+        return carServiceDtoList;
     }
 }

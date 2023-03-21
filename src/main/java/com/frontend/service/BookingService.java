@@ -17,6 +17,7 @@ public class BookingService {
     private final BookingClient bookingClient;
 
     public List<LocalTime> getAvailableBookingTimes(LocalDate date, int repairDuration, Long garageId) {
+        LOGGER.info("Given parameters to get available times, date: " + date + ", total repair time: " + repairDuration + ", garage id: " + garageId);
         List<LocalTime> localTimeList = bookingClient.getAvailableBookingTimes(date, repairDuration, garageId);
         LOGGER.info("Retrieved LocalTime list with size of: " + localTimeList.size());
         return localTimeList;

@@ -26,7 +26,6 @@ public class BookingClient {
     private final BackendConfig backendConfig;
 
     public List<LocalTime> getAvailableBookingTimes(LocalDate date, int repairDuration, Long garageId) {
-        LOGGER.info("Given parameters to get available times, date: " + date + ", total repair time: " + repairDuration + ", garage id: " + garageId);
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getBookingApiEndpoint() + "/available-times")
                     .queryParam("date", date.toString())
