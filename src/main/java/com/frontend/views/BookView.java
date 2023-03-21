@@ -268,7 +268,7 @@ public class BookView extends VerticalLayout {
         timePicker.setWidthFull();
         timePicker.addValueChangeListener(event -> {
             selectedStartTime = timePicker.getValue();
-            LOGGER.info("Time picked, selected time: " + selectedStartTime);
+            LOGGER.info("Selected time: " + selectedStartTime);
         });
         addBookButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         addBookButton.addClickListener(event -> {
@@ -292,7 +292,7 @@ public class BookView extends VerticalLayout {
 
     private void setGarageWorkTimes(VerticalLayout garageWorkTimes, GarageDto selectedGarage) {
         garageWorkTimes.removeAll();
-        Span span = new Span("Garage: " + selectedGarage.getName() + " opens:");
+        Span span = new Span(selectedGarage.getName() + " opening hours:");
         span.addClassNames(LumoUtility.FontWeight.BOLD);
         garageWorkTimes.add(span);
         for (GarageWorkTimeDto workTime : selectedGarage.getGarageWorkTimeDtoList()) {

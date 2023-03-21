@@ -53,4 +53,15 @@ public class CarServiceClient {
         }
     }
 
+    public void deleteService(Long serviceId) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarServiceApiEndpoint() + "/" + serviceId)
+                    .build()
+                    .encode()
+                    .toUri();
+            restTemplate.delete(url);
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 }

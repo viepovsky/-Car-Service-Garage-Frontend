@@ -42,6 +42,22 @@ public class BookingClient {
         }
     }
 
+    public List<LocalTime> getAvailableBookingTimes(LocalDate selectedNewDate, Long carServiceId) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getBookingApiEndpoint() + "/available-times")
+                    .queryParam("date", selectedNewDate.toString())
+                    .queryParam("car-service-id", carServiceId)
+                    .build()
+                    .encode()
+                    .toUri();
+            LocalTime[] response = restTemplate.getForObject(url, LocalTime[].class);
+            return Arrays.asList(ofNullable(response).orElse(new LocalTime[0]));
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
+            return new ArrayList<>();
+        }
+    }
+
     public void saveBooking(List<Long> selectedServiceIdList, LocalDate date, LocalTime startHour, Long garageId, Long carId, int repairDuration) {
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getBookingApiEndpoint())
@@ -57,6 +73,20 @@ public class BookingClient {
             restTemplate.postForObject(url, null, Void.class);
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    public void updateBooking(Long bookingId, LocalDate selectedNewDate, LocalTime selectedNewStartTime) {
+        try {
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getBookingApiEndpoint() + "/" + bookingId)
+                    .queryParam("date", selectedNewDate.toString())
+                    .queryParam("start-hour", selectedNewStartTime)
+                    .build()
+                    .encode()
+                    .toUri();
+            restTemplate.put(url, null);
+        } catch (RestClientException e) {
+            LOGGER.info(e.getMessage(), e);
         }
     }
 }

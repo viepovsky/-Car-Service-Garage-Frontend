@@ -25,4 +25,9 @@ public class ServiceCarService {
         LOGGER.info("Retrieved car services list with size of: " + carServiceDtoList.size());
         return carServiceDtoList;
     }
+
+    public void cancelService(Long serviceId) {
+        LOGGER.info("Deleting CarService with id: " + serviceId);
+        carServiceClient.deleteService(serviceId);
+    }
 }
