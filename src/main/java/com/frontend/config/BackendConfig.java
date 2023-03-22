@@ -23,6 +23,8 @@ public class BackendConfig {
     private String garageWorkTimeApiEndpoint;
     @Value("${car-api.api.endpoint}")
     private String carApiMakesEndpoint;
+    @Value("${weather-api.api.endpoint}")
+    private String weatherApiEndpoint;
 
 
 

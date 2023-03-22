@@ -1,8 +1,10 @@
 package com.frontend.views;
 
 import com.frontend.domainDto.response.CarServiceDto;
+import com.frontend.domainDto.response.ForecastDto;
 import com.frontend.service.BookingService;
 import com.frontend.service.ServiceCarService;
+import com.frontend.service.WeatherApiService;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -11,6 +13,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -46,6 +49,7 @@ public class ServiceView extends Div {
     private ServiceCarService serviceCarService;
     private BookingService bookingService;
     private CarServiceDto selectedCarService;
+    private WeatherApiService weatherApiService;
     private LocalDate selectedNewDate;
     private LocalTime selectedNewStartTime;
     private List<CarServiceDto> carServiceDtoList;
@@ -60,13 +64,15 @@ public class ServiceView extends Div {
     private VerticalLayout incomingLayout;
     private DatePicker datePicker = new DatePicker("Service date:");
     private ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
+    private VerticalLayout forecastLayout;
     private HorizontalLayout horizontalPickersLayout;
     private Button editButton = new Button("Edit service time");
     private Button cancelButton = new Button("Cancel service");
     private HorizontalLayout horizontalButtonsLayout;
-    public ServiceView(ServiceCarService serviceCarService, BookingService bookingService) {
+    public ServiceView(ServiceCarService serviceCarService, BookingService bookingService, WeatherApiService weatherApiService) {
         this.serviceCarService = serviceCarService;
         this.bookingService = bookingService;
+        this.weatherApiService = weatherApiService;
 
         incomingServiceTab = new Tab("Incoming services");
         inProgressTab = new Tab("In progress services");
@@ -83,7 +89,7 @@ public class ServiceView extends Div {
 
         addTabsAndGridLayoutToView();
 
-        addDateAndTimePicker();
+        addDateAndTimePickerAndForecast();
         addListenerToDatePicker();
         addListenerToTimePicker();
 
@@ -178,14 +184,17 @@ public class ServiceView extends Div {
         }
     }
 
-    private void addDateAndTimePicker() {
+    private void addDateAndTimePickerAndForecast() {
         datePicker.setMin(LocalDate.now());
         datePicker.setMax(LocalDate.now().plusDays(60));
         datePicker.setHelperText("Service date must be within 60 days from today, remember we work Mondays - Saturdays only");
 
+        forecastLayout = new VerticalLayout();
+        forecastLayout.setSpacing(false);
+
         timePicker.setMaxWidth("170px");
         timePicker.setWidthFull();
-        horizontalPickersLayout = new HorizontalLayout(datePicker, timePicker);
+        horizontalPickersLayout = new HorizontalLayout(datePicker, timePicker, forecastLayout);
         horizontalPickersLayout.setAlignItems(FlexComponent.Alignment.START);
         horizontalPickersLayout.addClassNames(LumoUtility.Margin.MEDIUM, LumoUtility.Margin.Top.NONE, LumoUtility.Margin.Bottom.LARGE);
         horizontalPickersLayout.setSizeFull();
@@ -195,6 +204,7 @@ public class ServiceView extends Div {
 
     private void addListenerToDatePicker() {
         datePicker.addValueChangeListener(event -> {
+            forecastLayout.removeAll();
             LocalDate tempDate = datePicker.getValue();
             String errorMessage = null;
             if (tempDate != null) {
@@ -209,10 +219,25 @@ public class ServiceView extends Div {
             }
             if (!datePicker.isInvalid() && datePicker.getValue() != null) {
                 selectedNewDate = datePicker.getValue();
+                if (!selectedNewDate.isAfter(LocalDate.now().plusDays(13))){
+                    setWeather();
+                } else {
+                    forecastLayout.add(new Span("Forecast is only available for 13 days ahead."));
+                }
                 LOGGER.info("Selected book date: " + selectedNewDate);
                 timePicker.setItems(bookingService.getAvailableBookingTimes(selectedNewDate, selectedCarService));
             }
         });
+    }
+
+    private void setWeather() {
+        String address = selectedCarService.getBookingDto().getGarageDto().getAddress();
+        ForecastDto forecastDto = weatherApiService.getWeatherForCityAndDate(address.substring(0, address.indexOf(" ")), selectedNewDate);
+        Span span = new Span("Weather for city: " + address.substring(0, address.indexOf(" ")) + ", and date: " + selectedNewDate );
+        Span span1 = new Span("Weather is: " + forecastDto.getSymbolPhrase().substring(0, 1).toUpperCase() + forecastDto.getSymbolPhrase().substring(1));
+        Span span2 = new Span("Max temp. " + forecastDto.getMaxTemp() + "\u00B0C, min temp. " + forecastDto.getMinTemp() + "\u00B0C. Wind up to " + forecastDto.getMaxWindSpeed() + "km/h.");
+        span.addClassNames(LumoUtility.FontWeight.BOLD);
+        forecastLayout.add(span, span1, span2);
     }
 
     private void addListenerToTimePicker() {
@@ -293,6 +318,8 @@ public class ServiceView extends Div {
                     serviceDtoGrid.setItems(incomingServiceList);
                     selectedCarService = null;
                     serviceDtoGrid.deselectAll();
+                } else {
+                    Notification.show("You must select start time in order to edit service date.");
                 }
             } else {
                 Notification.show("It is too late to change service time, only possible 2hours before start time. Please contact directly with " + selectedCarService.getBookingDto().getGarageDto().getName());

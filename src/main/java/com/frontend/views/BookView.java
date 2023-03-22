@@ -1,9 +1,6 @@
 package com.frontend.views;
 
-import com.frontend.domainDto.response.AvailableCarServiceDto;
-import com.frontend.domainDto.response.CarDto;
-import com.frontend.domainDto.response.GarageDto;
-import com.frontend.domainDto.response.GarageWorkTimeDto;
+import com.frontend.domainDto.response.*;
 import com.frontend.service.*;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -13,6 +10,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -46,6 +44,7 @@ public class BookView extends VerticalLayout {
     private AvailableServiceCarService availableServiceCarService;
     private ServiceCarService serviceCarService;
     private BookingService bookingService;
+    private WeatherApiService weatherApiService;
     private GarageDto selectedGarage;
     private CarDto selectedCar;
     private Set<AvailableCarServiceDto> selectedServices;
@@ -68,20 +67,23 @@ public class BookView extends VerticalLayout {
     private VerticalLayout detailsLayout = new VerticalLayout();
     private Paragraph dateText = new Paragraph("Now select the date you would like to have your car serviced.");
     private DatePicker datePicker = new DatePicker("Service date:");
-    private VerticalLayout dateLayout = new VerticalLayout(dateText, datePicker);
+    private VerticalLayout forecastLayout = new VerticalLayout();
+    private HorizontalLayout dateWithForecast = new HorizontalLayout(datePicker, forecastLayout);
+    private VerticalLayout dateLayout = new VerticalLayout(dateText, dateWithForecast);
     private Paragraph addBookText = new Paragraph("Finally, select service time:");
     private ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
     private Button addBookButton = new Button("Click to book the service.");
     private VerticalLayout bookLayout = new VerticalLayout(addBookText, timePicker, addBookButton);
     private H2 thankYouText = new H2("Your appointment has been successfully scheduled.");
     private Paragraph endText = new Paragraph("Thank you for using our car service booking system.");
-    private Paragraph endText2 = new Paragraph("You can check your upcoming and previous appointments in the 'Booking' tab in the drawer.");
-    public BookView(GarageService garageService, CarService carService, AvailableServiceCarService availableServiceCarService, ServiceCarService serviceCarService, BookingService bookingService) {
+    private Paragraph endText2 = new Paragraph("You can check your upcoming and previous appointments in the 'My Services' tab in the drawer or by clicking link below.");
+    public BookView(GarageService garageService, CarService carService, AvailableServiceCarService availableServiceCarService, ServiceCarService serviceCarService, BookingService bookingService, WeatherApiService weatherApiService) {
         this.garageService = garageService;
         this.carService = carService;
         this.availableServiceCarService = availableServiceCarService;
         this.serviceCarService = serviceCarService;
         this.bookingService = bookingService;
+        this.weatherApiService = weatherApiService;
 
         carLayout.setVisible(false);
         serviceLayout.setVisible(false);
@@ -239,6 +241,8 @@ public class BookView extends VerticalLayout {
         detailsLayout.setMaxWidth("600px");
         detailsLayout.setWidthFull();
 
+        dateWithForecast.setAlignItems(Alignment.BASELINE);
+        forecastLayout.setSpacing(false);
         dateText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE);
         LocalDate now = LocalDate.now();
         datePicker.setMin(now);
@@ -246,6 +250,7 @@ public class BookView extends VerticalLayout {
         datePicker.setHelperText("Service date must be within 60 days from today, remember we work Mondays - Saturdays only");
         datePicker.addClassNames(LumoUtility.Margin.Top.NONE);
         datePicker.addValueChangeListener(event -> {
+            forecastLayout.removeAll();
             LocalDate tempDate = datePicker.getValue();
             String errorMessage = null;
             if (tempDate != null) {
@@ -259,7 +264,13 @@ public class BookView extends VerticalLayout {
                 datePicker.setErrorMessage(errorMessage);
             }
             if (!datePicker.isInvalid() && datePicker.getValue() != null) {
+                forecastLayout.removeAll();
                 selectedDate = datePicker.getValue();
+                if (!selectedDate.isAfter(LocalDate.now().plusDays(13))){
+                    setWeather();
+                } else {
+                    forecastLayout.add(new Span("Forecast is only available for 13 days ahead."));
+                }
                 LOGGER.info("Selected book date: " + selectedDate);
                 timePicker.setItems(bookingService.getAvailableBookingTimes(selectedDate, totalRepairTime, selectedGarage.getId()));
             }
@@ -280,9 +291,11 @@ public class BookView extends VerticalLayout {
                 bookLayout.setVisible(false);
                 List<Long> selectedServicesIdList = selectedServices.stream().map(AvailableCarServiceDto::getId).toList();
                 bookingService.saveBooking(selectedServicesIdList, selectedDate, selectedStartTime, selectedGarage.getId(), selectedCar.getId(), totalRepairTime);
+                Anchor link = new Anchor("http://localhost:8081/services", "MyServices");
                 add(thankYouText);
                 add(endText);
                 add(endText2);
+                add(link);
             } else {
                 Notification.show("First select date and time.");
             }
@@ -309,5 +322,14 @@ public class BookView extends VerticalLayout {
             }
         }
         garageWorkTimes.setSpacing(false);
+    }
+
+    private void setWeather() {
+        ForecastDto forecastDto = weatherApiService.getWeatherForCityAndDate(selectedGarage.getAddress().substring(0, selectedGarage.getAddress().indexOf(" ")), selectedDate);
+        Span span = new Span("Weather for city: " + selectedGarage.getAddress().substring(0, selectedGarage.getAddress().indexOf(" ")) + ", and date: " + selectedDate );
+        span.addClassNames(LumoUtility.FontWeight.BOLD);
+        Span span1 = new Span("Weather is: " + forecastDto.getSymbolPhrase().substring(0, 1).toUpperCase() + forecastDto.getSymbolPhrase().substring(1));
+        Span span2 = new Span("Max temp. " + forecastDto.getMaxTemp() + "\u00B0C, min temp. " + forecastDto.getMinTemp() + "\u00B0C. Wind up to " + forecastDto.getMaxWindSpeed() + "km/h.");
+        forecastLayout.add(span, span1, span2);
     }
 }
