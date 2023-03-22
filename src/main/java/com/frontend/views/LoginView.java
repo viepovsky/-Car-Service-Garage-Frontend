@@ -19,7 +19,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     public LoginView(){
         LoginI18n i18n = LoginI18n.createDefault();
-        i18n.setAdditionalInformation("You can always test app by creating new account in the registration form above.");
+        i18n.setAdditionalInformation("You can test the app by creating a new account using the registration form above. Additionally, you can explore the user account, which is preloaded with initial data to showcase the app's capabilities.");
         LoginI18n.Form i18nForm = i18n.getForm();
         i18nForm.setForgotPassword("Create new account.");
         i18n.setForm(i18nForm);
@@ -27,7 +27,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         loginOverlay.setI18n(i18n);
         loginOverlay.setAction("login");
         loginOverlay.setTitle("Garage Booking Service");
-        loginOverlay.setDescription("Testing app with USER privileges, login as:\"testuser\" with \"testpassword\", with ADMIN privileges, login as:\"testadmin\" with \"testpassword\"");
+        loginOverlay.setDescription("Testing app from user view, login as:\"testuser\" with \"testpassword\", or create new account.");
         add(loginOverlay);
         loginOverlay.setOpened(true);
         loginOverlay.getElement().setAttribute("no-autofocus", "");

@@ -18,19 +18,20 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.format.DateTimeFormatter;
 
-@AnonymousAllowed
+@PermitAll
 @Route(value = "/user", layout = MainLayout.class)
 @PageTitle("User settings | Garage Booking Service")
 public class UserView extends VerticalLayout {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(UserView.class);
     private final Binder<UpdateUserDto> binder = new BeanValidationBinder<>(UpdateUserDto.class);
-    private final String currentUsername = "testuser6"; //SecurityContextHolder.getContext().getAuthentication().getName();
+    private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     private final UserService userService;
     private UserDto userDto;
     private TextField firstName = new TextField("First name");

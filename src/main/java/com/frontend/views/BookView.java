@@ -21,10 +21,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -34,11 +35,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-@AnonymousAllowed
+@PermitAll
 @Route(value = "/book", layout = MainLayout.class)
 @PageTitle("Book a service | Garage Booking Service")
 public class BookView extends VerticalLayout {
-    private final String currentUsername = "testuser6"; //SecurityContextHolder.getContext().getAuthentication().getName();
+    private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     private static final Logger LOGGER = LoggerFactory.getLogger(BookView.class);
     private GarageService garageService;
     private CarService carService;
