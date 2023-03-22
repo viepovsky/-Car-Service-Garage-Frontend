@@ -9,7 +9,9 @@ This repository contains only the frontend of Car Service Garage. To function pr
 
 ## Usage of external API
 
-At the moment, the application is using one external Car API to provide car details such as the year, make, model, and type.
+At the moment, the application is using two external API: 
+- Car API to provide car details such as the year, make, model, and type.
+- Weather API to retrieve a 13-day forecast for the garage location.
 
 ## How to run
 
