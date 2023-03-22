@@ -46,7 +46,7 @@ public class CarView extends VerticalLayout {
         grid.setSizeFull();
 
         setSpacing(false);
-        Paragraph information = new Paragraph("This page works slower than the others, and that's intentional because the car API it uses only accepts one request per second in the free version.");
+        Paragraph information = new Paragraph("This page when it comes to getting car models works slower than the others, and that's intentional because the car API it uses only accepts one request per second in the free version.");
         information.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.LARGE);
         add(information);
         add(new Paragraph("Here you have got access to all your cars, you can add, edit or delete them."));
