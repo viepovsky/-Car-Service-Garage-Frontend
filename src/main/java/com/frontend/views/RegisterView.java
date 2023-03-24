@@ -37,18 +37,31 @@ public class RegisterView extends VerticalLayout {
     private Button createUserButton = new Button("Create account.");
     private Button loginButton = new Button("Log in here if you already have account.");
     private VerticalLayout centerFormLayout = new VerticalLayout();
-
+    private FormLayout formLayout = new FormLayout();
     public RegisterView(LoginRegisterService loginRegisterService) {
         this.loginRegisterService = loginRegisterService;
-        centerFormLayout.setAlignItems(Alignment.CENTER);
-        centerFormLayout.setSizeFull();
+
         binder.bindInstanceFields(this);
 
+        addRegisterHeader();
+        addFormLayout();
+        addCenterFormLayoutSettings();
+
+        addButtonLayout();
+
+        setAlignMode();
+
+        addButtonClickListeners();
+    }
+
+    private void addRegisterHeader() {
         H1 h1 = new H1("Welcome in Garage Booking Service!");
         h1.addClassName(LumoUtility.Margin.Horizontal.AUTO);
         add(h1);
         add(new H3("Create new account or log in."));
-        FormLayout formLayout = new FormLayout();
+    }
+
+    private void addFormLayout() {
         email.setErrorMessage("Please enter a valid email address");
         formLayout.add(firstName, lastName, email, phoneNumber, username, password);
         formLayout.setResponsiveSteps(
@@ -57,19 +70,29 @@ public class RegisterView extends VerticalLayout {
                 new FormLayout.ResponsiveStep("1000px", 3));
         formLayout.setMaxWidth("1500px");
         centerFormLayout.add(formLayout);
+    }
+
+    private void addCenterFormLayoutSettings() {
+        centerFormLayout.setAlignItems(Alignment.CENTER);
         centerFormLayout.setHorizontalComponentAlignment( Alignment.CENTER, formLayout);
         centerFormLayout.setSizeFull();
         add(centerFormLayout);
+    }
 
+    private void addButtonLayout() {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         createUserButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         buttonLayout.add(createUserButton);
         buttonLayout.add(loginButton);
         add(buttonLayout);
+    }
 
+    private void setAlignMode() {
         setJustifyContentMode(JustifyContentMode.CENTER);
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+    }
 
+    private void addButtonClickListeners() {
         createUserButton.addClickListener(e -> {
             RegisterUserDto registerUserDto = new RegisterUserDto();
             if (binder.writeBeanIfValid(registerUserDto)){
@@ -84,6 +107,7 @@ public class RegisterView extends VerticalLayout {
                 Notification.show("All fields must be properly filled.");
             }
         });
+
         loginButton.addClickListener(e -> UI.getCurrent().getPage().setLocation("/login"));
     }
 

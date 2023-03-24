@@ -28,10 +28,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         loginOverlay.setAction("login");
         loginOverlay.setTitle("Garage Booking Service");
         loginOverlay.setDescription("Testing app from user view, login as:\"testuser\" with \"testpassword\", or create new account.");
-        add(loginOverlay);
         loginOverlay.setOpened(true);
         loginOverlay.getElement().setAttribute("no-autofocus", "");
         loginOverlay.addForgotPasswordListener(click -> UI.getCurrent().getPage().setLocation("/register"));
+        add(loginOverlay);
     }
 
     @Override

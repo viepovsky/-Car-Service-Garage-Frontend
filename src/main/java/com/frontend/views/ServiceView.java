@@ -46,10 +46,10 @@ import java.util.Optional;
 public class ServiceView extends Div {
     private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceView.class);
-    private ServiceCarService serviceCarService;
-    private BookingService bookingService;
+    private final ServiceCarService serviceCarService;
+    private final BookingService bookingService;
+    private final WeatherApiService weatherApiService;
     private CarServiceDto selectedCarService;
-    private WeatherApiService weatherApiService;
     private LocalDate selectedNewDate;
     private LocalTime selectedNewStartTime;
     private List<CarServiceDto> carServiceDtoList;
@@ -57,28 +57,24 @@ public class ServiceView extends Div {
     private List<CarServiceDto> incomingServiceList;
     private List<CarServiceDto> inProgressServiceList;
     private List<CarServiceDto> completedServiceList;
-    private final Tab incomingServiceTab;
-    private final Tab inProgressTab;
-    private final Tab completedServiceTab;
-    private final Tabs tabs;
+    private Tab incomingServiceTab;
+    private Tab inProgressTab;
+    private Tab completedServiceTab;
+    private Tabs tabs;
     private VerticalLayout incomingLayout;
     private DatePicker datePicker = new DatePicker("Service date:");
     private ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
     private VerticalLayout forecastLayout;
     private HorizontalLayout horizontalPickersLayout;
-    private Button editButton = new Button("Edit service time");
-    private Button cancelButton = new Button("Cancel service");
+    private final Button editButton = new Button("Edit service time");
+    private final Button cancelButton = new Button("Cancel service");
     private HorizontalLayout horizontalButtonsLayout;
     public ServiceView(ServiceCarService serviceCarService, BookingService bookingService, WeatherApiService weatherApiService) {
         this.serviceCarService = serviceCarService;
         this.bookingService = bookingService;
         this.weatherApiService = weatherApiService;
 
-        incomingServiceTab = new Tab("Incoming services");
-        inProgressTab = new Tab("In progress services");
-        completedServiceTab = new Tab("Completed services");
-        tabs = new Tabs(incomingServiceTab, inProgressTab, completedServiceTab);
-        tabs.addThemeVariants(TabsVariant.LUMO_EQUAL_WIDTH_TABS);
+        addTabsToLayout();
 
         formIncomingGrid();
 
@@ -87,7 +83,7 @@ public class ServiceView extends Div {
 
         tabs.addSelectedChangeListener(event -> setElementsVisible(event.getSelectedTab()));
 
-        addTabsAndGridLayoutToView();
+        addGridLayoutToView();
 
         addDateAndTimePickerAndForecast();
         addListenerToDatePicker();
@@ -96,6 +92,15 @@ public class ServiceView extends Div {
         createEditAndCancelServiceForm();
         addListenersToGrid();
         addListenersToButtons();
+    }
+
+    private void addTabsToLayout() {
+        incomingServiceTab = new Tab("Incoming services");
+        inProgressTab = new Tab("In progress services");
+        completedServiceTab = new Tab("Completed services");
+        tabs = new Tabs(incomingServiceTab, inProgressTab, completedServiceTab);
+        tabs.addThemeVariants(TabsVariant.LUMO_EQUAL_WIDTH_TABS);
+        add(tabs);
     }
 
     private void formIncomingGrid() {
@@ -247,8 +252,7 @@ public class ServiceView extends Div {
         });
     }
 
-    private void addTabsAndGridLayoutToView() {
-        add(tabs);
+    private void addGridLayoutToView() {
         serviceDtoGrid.setItems(incomingServiceList);
         incomingLayout = new VerticalLayout(serviceDtoGrid);
         add(incomingLayout);
