@@ -81,8 +81,6 @@ public class ServiceView extends Div {
         fetchCarServicesFromDb();
         filterCarServiceLists();
 
-        tabs.addSelectedChangeListener(event -> setElementsVisible(event.getSelectedTab()));
-
         addGridLayoutToView();
 
         addDateAndTimePickerAndForecast();
@@ -101,6 +99,7 @@ public class ServiceView extends Div {
         tabs = new Tabs(incomingServiceTab, inProgressTab, completedServiceTab);
         tabs.addThemeVariants(TabsVariant.LUMO_EQUAL_WIDTH_TABS);
         add(tabs);
+        tabs.addSelectedChangeListener(event -> setElementsVisible(event.getSelectedTab()));
     }
 
     private void formIncomingGrid() {

@@ -39,64 +39,106 @@ import java.util.*;
 public class BookView extends VerticalLayout {
     private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     private static final Logger LOGGER = LoggerFactory.getLogger(BookView.class);
-    private GarageService garageService;
-    private CarService carService;
-    private AvailableServiceCarService availableServiceCarService;
-    private ServiceCarService serviceCarService;
-    private BookingService bookingService;
-    private WeatherApiService weatherApiService;
+    private final GarageService garageService;
+    private final CarService carService;
+    private final AvailableServiceCarService availableServiceCarService;
+    private final BookingService bookingService;
+    private final WeatherApiService weatherApiService;
     private GarageDto selectedGarage;
     private CarDto selectedCar;
     private Set<AvailableCarServiceDto> selectedServices;
     private LocalDate selectedDate;
     private LocalTime selectedStartTime;
     private int totalRepairTime;
-    private Paragraph garageText = new Paragraph("Here you can book your services, first select garage by clicking it.");
-    private Grid<GarageDto> garageGrid = new Grid<>(GarageDto.class, false);
-    private VerticalLayout garageLayout = new VerticalLayout(garageText, garageGrid);
-    private HorizontalLayout garageBigLayout = new HorizontalLayout();
-    private Paragraph carText = new Paragraph("If you have already selected garage, now pick your car below:");
-    private ComboBox<CarDto> carComboBox = new ComboBox<>("Select your car:");
-    private VerticalLayout carLayout = new VerticalLayout(carText, carComboBox);
-    private Paragraph serviceText = new Paragraph("Below select services you wish to have:");
-    private Grid<AvailableCarServiceDto> serviceGrid = new Grid<>(AvailableCarServiceDto.class, false);
-    private Button confirmServiceButton = new Button("Confirm chosen services");
-    private VerticalLayout serviceLayout = new VerticalLayout(serviceText, serviceGrid, confirmServiceButton);
+    private final Paragraph garageText = new Paragraph("Here you can book your services, first select garage by clicking it.");
+    private final Grid<GarageDto> garageGrid = new Grid<>(GarageDto.class, false);
+    private final VerticalLayout garageLayout = new VerticalLayout(garageText, garageGrid);
+    private final VerticalLayout garageWorkTimes = new VerticalLayout();
+    private final HorizontalLayout garageBigLayout = new HorizontalLayout();
+    private final Paragraph carText = new Paragraph("If you have already selected garage, now pick your car below:");
+    private final ComboBox<CarDto> carComboBox = new ComboBox<>("Select your car:");
+    private final VerticalLayout carLayout = new VerticalLayout(carText, carComboBox);
+    private final Paragraph serviceText = new Paragraph("Below select services you wish to have:");
+    private final Grid<AvailableCarServiceDto> serviceGrid = new Grid<>(AvailableCarServiceDto.class, false);
+    private final Button confirmServiceButton = new Button("Confirm chosen services");
+    private final VerticalLayout serviceLayout = new VerticalLayout(serviceText, serviceGrid, confirmServiceButton);
     private Accordion preparedBookingDetails = new Accordion();
-    private Button backButton = new Button("Click to go back and change services");
-    private VerticalLayout detailsLayout = new VerticalLayout();
-    private Paragraph dateText = new Paragraph("Now select the date you would like to have your car serviced.");
-    private DatePicker datePicker = new DatePicker("Service date:");
-    private VerticalLayout forecastLayout = new VerticalLayout();
-    private HorizontalLayout dateWithForecast = new HorizontalLayout(datePicker, forecastLayout);
-    private VerticalLayout dateLayout = new VerticalLayout(dateText, dateWithForecast);
-    private Paragraph addBookText = new Paragraph("Finally, select service time:");
-    private ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
-    private Button addBookButton = new Button("Click to book the service.");
-    private VerticalLayout bookLayout = new VerticalLayout(addBookText, timePicker, addBookButton);
-    private H2 thankYouText = new H2("Your appointment has been successfully scheduled.");
-    private Paragraph endText = new Paragraph("Thank you for using our car service booking system.");
-    private Paragraph endText2 = new Paragraph("You can check your upcoming and previous appointments in the 'My Services' tab in the drawer or by clicking link below.");
-    public BookView(GarageService garageService, CarService carService, AvailableServiceCarService availableServiceCarService, ServiceCarService serviceCarService, BookingService bookingService, WeatherApiService weatherApiService) {
+    private final Button backButton = new Button("Click to go back and change services");
+    private final VerticalLayout detailsLayout = new VerticalLayout();
+    private final Paragraph dateText = new Paragraph("Now select the date you would like to have your car serviced.");
+    private final DatePicker datePicker = new DatePicker("Service date:");
+    private final VerticalLayout forecastLayout = new VerticalLayout();
+    private final HorizontalLayout dateWithForecast = new HorizontalLayout(datePicker, forecastLayout);
+    private final VerticalLayout dateLayout = new VerticalLayout(dateText, dateWithForecast);
+    private final Paragraph addBookText = new Paragraph("Finally, select service time:");
+    private final ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
+    private final Button addBookButton = new Button("Click to book the service.");
+    private final VerticalLayout bookLayout = new VerticalLayout(addBookText, timePicker, addBookButton);
+    private final H2 thankYouText = new H2("Your appointment has been successfully scheduled.");
+    private final Paragraph endText = new Paragraph("Thank you for using our car service booking system.");
+    private final Paragraph endText2 = new Paragraph("You can check your upcoming and previous appointments in the 'My Services' tab in the drawer or by clicking link below.");
+    public BookView(GarageService garageService, CarService carService, AvailableServiceCarService availableServiceCarService, BookingService bookingService, WeatherApiService weatherApiService) {
         this.garageService = garageService;
         this.carService = carService;
         this.availableServiceCarService = availableServiceCarService;
-        this.serviceCarService = serviceCarService;
         this.bookingService = bookingService;
         this.weatherApiService = weatherApiService;
 
+        setStartingVisibilityForAllLayouts();
+        setSpacing(false);
+
+        formGarageGrid();
+        formGarageLayouts();
+        addGarageGridListener();
+
+        formCarLayout();
+        addCarComboBoxListener();
+
+        formServiceGrid();
+        formServiceLayout();
+        addServiceLayoutListeners();
+
+        formDetailsLayoutAndAddBackButtonListener();
+
+        formForecastLayoutAndDatePicker();
+        addDatePickerListener();
+
+        formBookLayoutElements();
+        addBookLayoutListeners();
+
+        endText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.XSMALL);
+        endText2.addClassName(LumoUtility.Margin.Top.XSMALL);
+    }
+
+    private void setStartingVisibilityForAllLayouts() {
         carLayout.setVisible(false);
         serviceLayout.setVisible(false);
         detailsLayout.setVisible(false);
         dateLayout.setVisible(false);
         bookLayout.setVisible(false);
-        setSpacing(false);
+    }
 
-        VerticalLayout garageWorkTimes = new VerticalLayout();
+    private void formGarageGrid() {
         garageGrid.addColumn(GarageDto::getName).setHeader("Garage name").setSortable(true);
         garageGrid.addColumn(GarageDto::getAddress).setHeader("Address").setSortable(true);
+        garageGrid.setMaxHeight("250px");
+        garageGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+
         List<GarageDto> garageDtoList = garageService.getGarages();
         garageGrid.setItems(garageDtoList);
+    }
+
+    private void formGarageLayouts() {
+        garageLayout.setMaxWidth("1000px");
+        garageLayout.setWidthFull();
+
+        garageBigLayout.setWidthFull();
+        garageBigLayout.setAlignItems(Alignment.END);
+        garageBigLayout.add(garageLayout, garageWorkTimes);
+        add(garageBigLayout);
+    }
+
+    private void addGarageGridListener() {
         garageGrid.addSelectionListener(selection -> {
             Optional<GarageDto> optionalGarage = selection.getFirstSelectedItem();
             if (optionalGarage.isPresent()) {
@@ -108,12 +150,7 @@ public class BookView extends VerticalLayout {
                 List<AvailableCarServiceDto> serviceList = availableServiceCarService.getAllAvailableServices(selectedGarage.getId());
                 if (selectedCar != null) {
                     serviceList.forEach(service -> {
-                        BigDecimal cost = service.getCost().setScale(0, RoundingMode.HALF_DOWN);
-                        service.setCost(cost);
-                        if(service.getPremiumMakes().toLowerCase().contains(selectedCar.getMake().toLowerCase())) {
-                            cost = service.getCost().multiply(service.getMakeMultiplier());
-                            service.setCost(cost.setScale(0, RoundingMode.HALF_DOWN));
-                        }
+                        setMultipliedCostForPremiumMakes(service);
                         serviceGrid.setItems(serviceList);
                     });
                 }
@@ -126,46 +163,74 @@ public class BookView extends VerticalLayout {
                 carComboBox.setValue(null);
             }
         });
-        garageGrid.setMaxHeight("250px");
-        garageGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
-        garageLayout.setMaxWidth("1000px");
-        garageLayout.setWidthFull();
-        garageBigLayout.setWidthFull();
-        garageBigLayout.setAlignItems(Alignment.END);
-        garageBigLayout.add(garageLayout, garageWorkTimes);
-        add(garageBigLayout);
+    }
 
+    private void setMultipliedCostForPremiumMakes(AvailableCarServiceDto service) {
+        BigDecimal cost = service.getCost().setScale(0, RoundingMode.HALF_DOWN);
+        service.setCost(cost);
+        if(service.getPremiumMakes().toLowerCase().contains(selectedCar.getMake().toLowerCase())) {
+            cost = service.getCost().multiply(service.getMakeMultiplier());
+            service.setCost(cost.setScale(0, RoundingMode.HALF_DOWN));
+        }
+    }
+
+    private void formCarLayout(){
         carText.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Margin.Bottom.NONE);
+
         carComboBox.setItems(carService.getCarsForGivenUsername(currentUsername));
         carComboBox.setItemLabelGenerator(carDto ->
                 carDto.getMake() + " " +
-                carDto.getModel() + " " +
-                carDto.getType() + " " +
-                carDto.getYear() + " " +
-                carDto.getEngine()
+                        carDto.getModel() + " " +
+                        carDto.getType() + " " +
+                        carDto.getYear() + " " +
+                        carDto.getEngine()
         );
         carComboBox.setMaxWidth("500px");
         carComboBox.setWidthFull();
-        carComboBox.addClientValidatedEventListener(event -> {
-            selectedCar = new CarDto(carComboBox.getValue());
-            LOGGER.info("Selected car: " + selectedCar);
-            serviceLayout.setVisible(true);
-            List<AvailableCarServiceDto> serviceList = availableServiceCarService.getAllAvailableServices(selectedGarage.getId());
-            serviceList.forEach(service -> {
-                BigDecimal cost = service.getCost().setScale(0, RoundingMode.HALF_DOWN);
-                service.setCost(cost);
-                if(service.getPremiumMakes().toLowerCase().contains(selectedCar.getMake().toLowerCase())) {
-                    cost = service.getCost().multiply(service.getMakeMultiplier());
-                    service.setCost(cost.setScale(0, RoundingMode.HALF_DOWN));
-                }
-            });
-            serviceGrid.setItems(serviceList);
-            LOGGER.info("Available services list for selected garage: " + serviceList);
-        });
-        add(carLayout);
 
+        add(carLayout);
+    }
+
+    private void addCarComboBoxListener() {
+        carComboBox.addClientValidatedEventListener(event -> {
+            if (!carComboBox.isEmpty()) {
+                selectedCar = new CarDto(carComboBox.getValue());
+                LOGGER.info("Selected car: " + selectedCar);
+                serviceLayout.setVisible(true);
+                List<AvailableCarServiceDto> serviceList = availableServiceCarService.getAllAvailableServices(selectedGarage.getId());
+                serviceList.forEach(this::setMultipliedCostForPremiumMakes);
+                serviceGrid.setItems(serviceList);
+                LOGGER.info("Available services list for selected garage: " + serviceList);
+            }
+        });
+    }
+
+    private void formServiceGrid() {
+        serviceGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        serviceGrid.addColumn(AvailableCarServiceDto::getName).setHeader("Service").setSortable(true);
+        serviceGrid.addColumn(AvailableCarServiceDto::getDescription).setHeader("Description");
+        serviceGrid.addColumn(AvailableCarServiceDto::getCost).setHeader("Cost [PLN]").setSortable(true);
+        serviceGrid.addColumn(AvailableCarServiceDto::getRepairTimeInMinutes).setHeader("Repair time [min]");
+        serviceGrid.setMaxHeight("250px");
+        serviceGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+    }
+
+    private void formServiceLayout() {
         serviceText.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Margin.Bottom.NONE);
+
         confirmServiceButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        serviceLayout.setMaxWidth("1000px");
+        serviceLayout.setWidthFull();
+        add(serviceLayout);
+    }
+
+    private void addServiceLayoutListeners() {
+        serviceGrid.addSelectionListener(selection -> {
+            selectedServices = selection.getAllSelectedItems();
+            LOGGER.info("Selected services id: " + selectedServices.stream().map(AvailableCarServiceDto::getId).toList());
+        });
+
         confirmServiceButton.addClickListener(event -> {
             if (selectedServices != null && selectedServices.size() != 0) {
                 LOGGER.info("Clicked button confirm with values:");
@@ -203,23 +268,14 @@ public class BookView extends VerticalLayout {
                 detailsLayout.setVisible(true);
                 dateLayout.setVisible(true);
                 bookLayout.setVisible(true);
-
             }
         });
-        serviceGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        serviceGrid.addColumn(AvailableCarServiceDto::getName).setHeader("Service").setSortable(true);
-        serviceGrid.addColumn(AvailableCarServiceDto::getDescription).setHeader("Description");
-        serviceGrid.addColumn(AvailableCarServiceDto::getCost).setHeader("Cost [PLN]").setSortable(true);
-        serviceGrid.addColumn(AvailableCarServiceDto::getRepairTimeInMinutes).setHeader("Repair time [min]");
-        serviceGrid.addSelectionListener(selection -> {
-            selectedServices = selection.getAllSelectedItems();
-            LOGGER.info("Selected services id: " + selectedServices.stream().map(AvailableCarServiceDto::getId).toList());
-        });
-        serviceGrid.setMaxHeight("250px");
-        serviceGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
-        serviceLayout.setMaxWidth("1000px");
-        serviceLayout.setWidthFull();
-        add(serviceLayout);
+    }
+
+    private void formDetailsLayoutAndAddBackButtonListener() {
+        backButton.addClassName(LumoUtility.Margin.Top.LARGE);
+        detailsLayout.setMaxWidth("600px");
+        detailsLayout.setWidthFull();
 
         backButton.addClickListener(event -> {
             LOGGER.info("Back button clicked.");
@@ -237,18 +293,21 @@ public class BookView extends VerticalLayout {
             bookLayout.setVisible(false);
 
         });
-        backButton.addClassName(LumoUtility.Margin.Top.LARGE);
-        detailsLayout.setMaxWidth("600px");
-        detailsLayout.setWidthFull();
+    }
 
+    private void formForecastLayoutAndDatePicker() {
         dateWithForecast.setAlignItems(Alignment.BASELINE);
         forecastLayout.setSpacing(false);
         dateText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE);
+
         LocalDate now = LocalDate.now();
         datePicker.setMin(now);
         datePicker.setMax(now.plusDays(60));
         datePicker.setHelperText("Service date must be within 60 days from today, remember we work Mondays - Saturdays only");
         datePicker.addClassNames(LumoUtility.Margin.Top.NONE);
+    }
+
+    private void addDatePickerListener() {
         datePicker.addValueChangeListener(event -> {
             forecastLayout.removeAll();
             LocalDate tempDate = datePicker.getValue();
@@ -275,14 +334,21 @@ public class BookView extends VerticalLayout {
                 timePicker.setItems(bookingService.getAvailableBookingTimes(selectedDate, totalRepairTime, selectedGarage.getId()));
             }
         });
+    }
+
+    private void formBookLayoutElements() {
         addBookText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE);
         timePicker.setMaxWidth("300px");
         timePicker.setWidthFull();
+        addBookButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    }
+
+    private void addBookLayoutListeners() {
         timePicker.addValueChangeListener(event -> {
             selectedStartTime = timePicker.getValue();
             LOGGER.info("Selected time: " + selectedStartTime);
         });
-        addBookButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
         addBookButton.addClickListener(event -> {
             LOGGER.info("Button save clicked.");
             if (selectedDate != null && selectedStartTime != null) {
@@ -300,9 +366,8 @@ public class BookView extends VerticalLayout {
                 Notification.show("First select date and time.");
             }
         });
-        endText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.XSMALL);
-        endText2.addClassName(LumoUtility.Margin.Top.XSMALL);
     }
+
 
     private void setGarageWorkTimes(VerticalLayout garageWorkTimes, GarageDto selectedGarage) {
         garageWorkTimes.removeAll();
