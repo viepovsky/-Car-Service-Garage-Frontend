@@ -25,23 +25,21 @@ import java.util.List;
 public class CarForm extends FormLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarForm.class);
     private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-    private CarApiService carApiService;
-    private CarService carService;
-    private CarView carView;
+    private final CarApiService carApiService;
+    private final CarService carService;
+    private final CarView carView;
     private List<Integer> carYearList;
-    private List<String> carMakeList;
-    private List<String> carTypeList;
-    private ComboBox<Integer> year = new ComboBox<>("Year");
-    private ComboBox<String> make = new ComboBox<>("Make");
-    private ComboBox<String> type = new ComboBox<>("Type");
-    private ComboBox<String> model = new ComboBox<>("Model");
-    private TextField engine = new TextField("Engine type");
-    private Button save = new Button("Save");
-    private Button edit = new Button("Edit");
-    private Button delete = new Button("Delete");
-    private Button refresh = new Button("Click to refresh car models.");
-    private Button cancel = new Button("Cancel");
-    private Binder<CarCreateDto> binder = new BeanValidationBinder<>(CarCreateDto.class);
+    private final ComboBox<Integer> year = new ComboBox<>("Year");
+    private final ComboBox<String> make = new ComboBox<>("Make");
+    private final ComboBox<String> type = new ComboBox<>("Type");
+    private final ComboBox<String> model = new ComboBox<>("Model");
+    private final TextField engine = new TextField("Engine type");
+    private final Button save = new Button("Save");
+    private final Button edit = new Button("Edit");
+    private final Button delete = new Button("Delete");
+    private final Button refresh = new Button("Click to refresh car models.");
+    private final Button cancel = new Button("Cancel");
+    private final Binder<CarCreateDto> binder = new BeanValidationBinder<>(CarCreateDto.class);
     private CarCreateDto temporaryDto;
     public CarForm(CarApiService carApiService, CarService carService, CarView carView) {
         this.carApiService = carApiService;
@@ -51,10 +49,27 @@ public class CarForm extends FormLayout {
         binder.bindInstanceFields(this);
 
         setYearsMakesTypesLists();
+        addFieldsAndButtons();
+        addButtonsListeners();
+
+        addBinderValueChangeListener();
+    }
+
+    private void setYearsMakesTypesLists() {
+        carYearList = carApiService.getCarYears();
+        List<String> carMakeList = carApiService.getCarMakes();
+        List<String> carTypeList = carApiService.getCarTypes();
+
+        Collections.sort(carYearList);
+        Collections.sort(carMakeList);
+        Collections.sort(carTypeList);
+
         year.setItems(carYearList);
         make.setItems(carMakeList);
         type.setItems(carTypeList);
+    }
 
+    private void addFieldsAndButtons() {
         HorizontalLayout buttons = new HorizontalLayout(save, edit, delete, cancel);
         delete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -64,13 +79,17 @@ public class CarForm extends FormLayout {
         add(year, make, type, model, engine);
         add(refresh);
         add(buttons);
+    }
 
+    private void addButtonsListeners() {
         save.addClickListener(event -> save());
         delete.addClickListener(event -> delete());
         refresh.addClickListener(event -> refreshCarModels());
         edit.addClickListener(event -> edit());
         cancel.addClickListener(event -> cancel());
+    }
 
+    private void addBinderValueChangeListener() {
         binder.addValueChangeListener( event -> {
             CarCreateDto carCreateDto = new CarCreateDto(binder.getBean());
             if (temporaryDto != null) {
@@ -82,15 +101,6 @@ public class CarForm extends FormLayout {
                 }
             }
         });
-    }
-
-    private void setYearsMakesTypesLists() {
-        carYearList = carApiService.getCarYears();
-        carMakeList = carApiService.getCarMakes();
-        carTypeList = carApiService.getCarTypes();
-        Collections.sort(carYearList);
-        Collections.sort(carMakeList);
-        Collections.sort(carTypeList);
     }
 
     public void setCarCreateDto(CarCreateDto carCreateDto) {

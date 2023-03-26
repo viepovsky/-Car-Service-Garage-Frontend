@@ -20,8 +20,8 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class MainLayout extends AppLayout {
-    private SecurityService securityService;
-    public MainLayout(SecurityService securityService) {
+    private final SecurityService securityService;
+    public MainLayout() {
         this.securityService = new SecurityService();
         createHeader();
         createDrawer();

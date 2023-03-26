@@ -28,16 +28,16 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 public class RegisterView extends VerticalLayout {
     private final LoginRegisterService loginRegisterService;
     private final Binder<RegisterUserDto> binder = new BeanValidationBinder<>(RegisterUserDto.class);
-    private TextField firstName = new TextField("First name");
-    private TextField lastName = new TextField("Last name");
-    private TextField username = new TextField("Username");
-    private PasswordField password = new PasswordField("Password");
-    private EmailField email = new EmailField("Email address");
-    private TextField phoneNumber = new TextField("Phone number");
-    private Button createUserButton = new Button("Create account.");
-    private Button loginButton = new Button("Log in here if you already have account.");
-    private VerticalLayout centerFormLayout = new VerticalLayout();
-    private FormLayout formLayout = new FormLayout();
+    private final TextField firstName = new TextField("First name");
+    private final TextField lastName = new TextField("Last name");
+    private final TextField username = new TextField("Username");
+    private final PasswordField password = new PasswordField("Password");
+    private final EmailField email = new EmailField("Email address");
+    private final TextField phoneNumber = new TextField("Phone number");
+    private final Button createUserButton = new Button("Create account.");
+    private final Button loginButton = new Button("Log in here if you already have account.");
+    private final VerticalLayout centerFormLayout = new VerticalLayout();
+    private final FormLayout formLayout = new FormLayout();
     public RegisterView(LoginRegisterService loginRegisterService) {
         this.loginRegisterService = loginRegisterService;
 

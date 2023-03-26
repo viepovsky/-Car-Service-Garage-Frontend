@@ -26,7 +26,7 @@ public class UserService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         PasswordDto passwordDto = userClient.getPassword(username);
         String retrievedPassword = passwordDto.getPassword();
-        LOGGER.info("Retrieved password: " + retrievedPassword + "current password raw to check: " + password);
+        LOGGER.info("Retrieved password: " + retrievedPassword + " current password raw to check: " + password);
         boolean matches = passwordEncoder.matches(password, retrievedPassword);
         LOGGER.info("Password match: " + matches);
         return matches;
@@ -34,11 +34,13 @@ public class UserService {
 
     public void updateUser(UpdateUserDto updateUserDto) {
         LOGGER.info("Updating user with username: " + updateUserDto.getUsername());
-        if (updateUserDto.getNewPassword() != null) {
+        if (updateUserDto.getNewPassword() != null && !updateUserDto.getNewPassword().isEmpty()) {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             updateUserDto.setPassword(passwordEncoder.encode(updateUserDto.getNewPassword()));
-            updateUserDto.setNewPassword(null);
+        } else {
+            updateUserDto.setPassword(null);
         }
+        updateUserDto.setNewPassword(null);
         userClient.updateUser(updateUserDto);
     }
 }

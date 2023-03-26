@@ -24,20 +24,6 @@ public class CarServiceClient {
     private final RestTemplate restTemplate;
     private final BackendConfig backendConfig;
 
-    public void addService(List<Long> selectedServicesIdList, Long carId) {
-        try {
-            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarServiceApiEndpoint())
-                    .queryParam("service-id", selectedServicesIdList)
-                    .queryParam("car-id", carId)
-                    .build()
-                    .encode()
-                    .toUri();
-            restTemplate.postForObject(url, null, Void.class);
-        } catch (RestClientException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
     public List<CarServiceDto> getCarServices(String username) {
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarServiceApiEndpoint())

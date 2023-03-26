@@ -53,7 +53,7 @@ public class ServiceView extends Div {
     private LocalDate selectedNewDate;
     private LocalTime selectedNewStartTime;
     private List<CarServiceDto> carServiceDtoList;
-    private Grid<CarServiceDto> serviceDtoGrid = new Grid<>(CarServiceDto.class, false);
+    private final Grid<CarServiceDto> serviceDtoGrid = new Grid<>(CarServiceDto.class, false);
     private List<CarServiceDto> incomingServiceList;
     private List<CarServiceDto> inProgressServiceList;
     private List<CarServiceDto> completedServiceList;
@@ -61,9 +61,8 @@ public class ServiceView extends Div {
     private Tab inProgressTab;
     private Tab completedServiceTab;
     private Tabs tabs;
-    private VerticalLayout incomingLayout;
-    private DatePicker datePicker = new DatePicker("Service date:");
-    private ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
+    private final DatePicker datePicker = new DatePicker("Service date:");
+    private final ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
     private VerticalLayout forecastLayout;
     private HorizontalLayout horizontalPickersLayout;
     private final Button editButton = new Button("Edit service time");
@@ -253,7 +252,7 @@ public class ServiceView extends Div {
 
     private void addGridLayoutToView() {
         serviceDtoGrid.setItems(incomingServiceList);
-        incomingLayout = new VerticalLayout(serviceDtoGrid);
+        VerticalLayout incomingLayout = new VerticalLayout(serviceDtoGrid);
         add(incomingLayout);
     }
 

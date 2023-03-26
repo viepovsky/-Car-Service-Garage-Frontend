@@ -33,30 +33,30 @@ public class UserView extends VerticalLayout {
     private final Binder<UpdateUserDto> binder = new BeanValidationBinder<>(UpdateUserDto.class);
     private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     private final UserService userService;
-    private UserDto userDto;
-    private TextField firstName = new TextField("First name");
-    private TextField lastName = new TextField("Last name");
-    private TextField username = new TextField("Username");
-    private PasswordField currentPassword = new PasswordField("Current password");
-    private PasswordField newPassword = new PasswordField("New password");
-    private PasswordField confirmPassword = new PasswordField("Confirm new password");
-    private EmailField email = new EmailField("Email address");
-    private TextField phoneNumber = new TextField("Phone number");
-    private FormLayout formLayout = new FormLayout(username, firstName, lastName,  email, phoneNumber, currentPassword, newPassword, confirmPassword);
-    private Button editButton = new Button("Edit");
-    private Button clearButton = new Button("Clear");
+    private final UserDto userDto;
+    private final TextField firstName = new TextField("First name");
+    private final TextField lastName = new TextField("Last name");
+    private final TextField username = new TextField("Username");
+    private final PasswordField currentPassword = new PasswordField("Current password");
+    private final PasswordField newPassword = new PasswordField("New password");
+    private final PasswordField confirmPassword = new PasswordField("Confirm new password");
+    private final EmailField email = new EmailField("Email address");
+    private final TextField phoneNumber = new TextField("Phone number");
+    private final FormLayout formLayout = new FormLayout(username, firstName, lastName,  email, phoneNumber, currentPassword, newPassword, confirmPassword);
+    private final Button editButton = new Button("Edit");
+    private final Button clearButton = new Button("Clear");
     public UserView(UserService userService) {
         this.userService = userService;
         userDto = userService.getUser(currentUsername);
 
         bindAndValidatePasswordFields();
 
-        addForm(userDto);
+        addForm();
 
         addButtons();
-        addButtonsListeners(userDto);
+        addButtonsListeners();
 
-        addCreatedDate(userDto);
+        addCreatedDate();
     }
 
     private void bindAndValidatePasswordFields() {
@@ -111,7 +111,7 @@ public class UserView extends VerticalLayout {
         confirmPassword.addValueChangeListener(event -> binder.validate());
     }
 
-    private void addForm(UserDto userDto) {
+    private void addForm() {
         H2 h2 = new H2("Personal information:");
         add(h2);
 
@@ -148,7 +148,7 @@ public class UserView extends VerticalLayout {
         add(hl);
     }
 
-    private void addButtonsListeners(UserDto userDto) {
+    private void addButtonsListeners() {
         editButton.addClickListener(event -> {
             UpdateUserDto updateUserDto = new UpdateUserDto();
            if (binder.writeBeanIfValid(updateUserDto)) {
@@ -156,18 +156,21 @@ public class UserView extends VerticalLayout {
                 if (updateUserDto.getNewPassword() != null && !updateUserDto.getNewPassword().isEmpty()) {
                     if (userService.isPasswordMatched(currentUsername, updateUserDto.getPassword())) {
                         userService.updateUser(updateUserDto);
-                        Notification.show("Account updated.");
+                        Notification.show("Account updated, password changed.");
                         UserDto newUserDto = userService.getUser(currentUsername);
                         initValues(newUserDto);
                     } else {
                         Notification.show("Your current password is wrong.");
                     }
                 } else {
+                    LOGGER.info("Is password empty: " + updateUserDto.getNewPassword().isEmpty());
                     userService.updateUser(updateUserDto);
                     Notification.show("Account updated.");
                     UserDto newUserDto = userService.getUser(currentUsername);
                     initValues(newUserDto);
                 }
+           } else {
+               Notification.show("Cannot edit, please correct fields.");
            }
         });
         clearButton.addClickListener(event -> {
@@ -176,7 +179,7 @@ public class UserView extends VerticalLayout {
         });
     }
 
-    private void addCreatedDate(UserDto userDto) {
+    private void addCreatedDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
         Paragraph paragraph = new Paragraph("Your account was created on: " + userDto.getCreatedDate().format(formatter));
         paragraph.addClassNames(LumoUtility.FontSize.XSMALL, LumoUtility.FontWeight.LIGHT);
