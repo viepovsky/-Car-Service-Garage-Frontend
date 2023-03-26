@@ -10,7 +10,6 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class CarForm extends FormLayout {
     private final ComboBox<String> make = new ComboBox<>("Make");
     private final ComboBox<String> type = new ComboBox<>("Type");
     private final ComboBox<String> model = new ComboBox<>("Model");
-    private final TextField engine = new TextField("Engine type");
+    private final ComboBox<String> engine = new ComboBox<>("Engine type");
     private final Button save = new Button("Save");
     private final Button edit = new Button("Edit");
     private final Button delete = new Button("Delete");
@@ -59,7 +59,7 @@ public class CarForm extends FormLayout {
         carYearList = carApiService.getCarYears();
         List<String> carMakeList = carApiService.getCarMakes();
         List<String> carTypeList = carApiService.getCarTypes();
-
+        List<String> carEnginesList = Arrays.asList("Petrol", "Diesel", "Hybrid", "Electric", "LPG", "Other");
         Collections.sort(carYearList);
         Collections.sort(carMakeList);
         Collections.sort(carTypeList);
@@ -67,6 +67,7 @@ public class CarForm extends FormLayout {
         year.setItems(carYearList);
         make.setItems(carMakeList);
         type.setItems(carTypeList);
+        engine.setItems(carEnginesList);
     }
 
     private void addFieldsAndButtons() {
