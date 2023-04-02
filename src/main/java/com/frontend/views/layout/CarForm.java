@@ -150,6 +150,7 @@ public class CarForm extends FormLayout {
             carService.updateCar(carCreateDto);
             carView.refresh();
             setCarCreateDto(null);
+            Notification.show("Car updated.");
         } else {
             Notification.show("All fields must be valid if you want to edit your car.");
         }
@@ -162,6 +163,7 @@ public class CarForm extends FormLayout {
             carService.saveCar(carCreateDto, currentUsername);
             carView.refresh();
             setCarCreateDto(null);
+            Notification.show("Car added.");
         } else {
             Notification.show("All fields must be valid if you want to add a new car.");
         }

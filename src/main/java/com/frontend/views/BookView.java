@@ -57,7 +57,9 @@ public class BookView extends VerticalLayout {
     private final HorizontalLayout garageBigLayout = new HorizontalLayout();
     private final Paragraph carText = new Paragraph("If you have already selected garage, now pick your car below:");
     private final ComboBox<CarDto> carComboBox = new ComboBox<>("Select your car:");
-    private final VerticalLayout carLayout = new VerticalLayout(carText, carComboBox);
+    private final Button carButton = new Button("Confirm car selection");
+    private final HorizontalLayout carHorizontalComboBoxAndButtonLayout = new HorizontalLayout(carComboBox, carButton);
+    private final VerticalLayout carLayout = new VerticalLayout(carText, carHorizontalComboBoxAndButtonLayout);
     private final Paragraph serviceText = new Paragraph("Below select services you wish to have:");
     private final Grid<AvailableCarServiceDto> serviceGrid = new Grid<>(AvailableCarServiceDto.class, false);
     private final Button confirmServiceButton = new Button("Confirm chosen services");
@@ -176,6 +178,9 @@ public class BookView extends VerticalLayout {
 
     private void formCarLayout(){
         carText.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Margin.Bottom.NONE);
+        carButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        carHorizontalComboBoxAndButtonLayout.setWidthFull();
+        carHorizontalComboBoxAndButtonLayout.setAlignItems(Alignment.BASELINE);
 
         carComboBox.setItems(carService.getCarsForGivenUsername(currentUsername));
         carComboBox.setItemLabelGenerator(carDto ->
@@ -203,6 +208,7 @@ public class BookView extends VerticalLayout {
                 LOGGER.info("Available services list for selected garage: " + serviceList);
             }
         });
+        //There is no listener assigned to the car button. Button is only added to prompt the user to unclick the combo box when choosing car. Without it, the car combo box listener won't trigger.
     }
 
     private void formServiceGrid() {
