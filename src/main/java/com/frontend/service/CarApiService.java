@@ -31,9 +31,6 @@ public class CarApiService {
     }
 
     public List<String> getCarModels(String make, String type, Integer year) {
-        if (make == null){
-            return new ArrayList<>();
-        }
         LOGGER.info("Getting car models.");
         List<String> carModelsList = carApiClient.getCarModels(make, type, year);
         LOGGER.info("Car models received: " + carModelsList);
