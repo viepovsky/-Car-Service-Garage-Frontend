@@ -1,8 +1,10 @@
 package com.frontend.views.layout;
 
 import com.frontend.domainDto.request.CarCreateDto;
+import com.frontend.domainDto.response.CarServiceDto;
 import com.frontend.service.CarApiService;
 import com.frontend.service.CarService;
+import com.frontend.service.ServiceCarService;
 import com.frontend.views.CarView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,10 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CarForm extends FormLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarForm.class);
@@ -27,6 +26,7 @@ public class CarForm extends FormLayout {
     private final CarApiService carApiService;
     private final CarService carService;
     private final CarView carView;
+    private final ServiceCarService serviceCarService;
     private List<Integer> carYearList;
     private final ComboBox<Integer> year = new ComboBox<>("Year");
     private final ComboBox<String> make = new ComboBox<>("Make");
@@ -39,10 +39,11 @@ public class CarForm extends FormLayout {
     private final Button cancel = new Button("Cancel");
     private final Binder<CarCreateDto> binder = new BeanValidationBinder<>(CarCreateDto.class);
     private CarCreateDto temporaryDto;
-    public CarForm(CarApiService carApiService, CarService carService, CarView carView) {
+    public CarForm(CarApiService carApiService, CarService carService, CarView carView, ServiceCarService serviceCarService) {
         this.carApiService = carApiService;
         this.carService = carService;
         this.carView = carView;
+        this.serviceCarService = serviceCarService;
 
         binder.bindInstanceFields(this);
 
@@ -179,9 +180,15 @@ public class CarForm extends FormLayout {
 
     private void delete() {
         CarCreateDto carCreateDto = binder.getBean();
-        carService.deleteCar(carCreateDto.getId());
-        LOGGER.info("Button delete clicked with object: " + carCreateDto);
-        carView.refresh();
-        setCarCreateDto(null);
+        List<CarServiceDto> serviceList = serviceCarService.getCarServices(currentUsername).stream().filter(n -> Objects.equals(n.getCarDto().getId(), carCreateDto.getId())).toList();
+        if (serviceList.isEmpty()) {
+            carService.deleteCar(carCreateDto.getId());
+            LOGGER.info("Button delete clicked with object: " + carCreateDto);
+            carView.refresh();
+            setCarCreateDto(null);
+            Notification.show("Car deleted.");
+        } else {
+            Notification.show("Cannot delete car, there are connected services. Check \"My Services\" page.");
+        }
     }
 }
