@@ -112,39 +112,38 @@ public class CarForm extends FormLayout {
         model.setItems(modelList);
     }
 
-
     public void setCarCreateDto(CarCreateDto carCreateDto) {
-    if (carCreateDto == null) {
-        setVisible(false);
-    } else if (carCreateDto.equals(new CarCreateDto())) {
-        model.setItems(new ArrayList<>());
-        binder.setBean(new CarCreateDto());
-        temporaryDto = null;
+        if (carCreateDto == null) {
+            setVisible(false);
+        } else if (carCreateDto.equals(new CarCreateDto())) {
+            model.setItems(new ArrayList<>());
+            binder.setBean(new CarCreateDto());
+            temporaryDto = null;
 
-        save.setVisible(true);
-        cancel.setVisible(true);
-        edit.setVisible(false);
-        delete.setVisible(false);
+            save.setVisible(true);
+            cancel.setVisible(true);
+            edit.setVisible(false);
+            delete.setVisible(false);
 
-        setVisible(true);
-        year.focus();
-        year.setValue(carYearList.get(0));
-    } else {
-        LOGGER.info("Getting car models with values: " + carCreateDto.getMake() + ", " + carCreateDto.getType() + ", " + carCreateDto.getYear());
-        List<String> modelList = carApiService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
-        model.setItems(modelList);
-        temporaryDto = new CarCreateDto(carCreateDto);
-        binder.setBean(new CarCreateDto(carCreateDto));
+            setVisible(true);
+            year.focus();
+            year.setValue(carYearList.get(0));
+        } else {
+            LOGGER.info("Getting car models with values: " + carCreateDto.getMake() + ", " + carCreateDto.getType() + ", " + carCreateDto.getYear());
+            List<String> modelList = carApiService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
+            model.setItems(modelList);
+            temporaryDto = new CarCreateDto(carCreateDto);
+            binder.setBean(new CarCreateDto(carCreateDto));
 
-        save.setVisible(false);
-        cancel.setVisible(true);
-        edit.setVisible(true);
-        delete.setVisible(true);
+            save.setVisible(false);
+            cancel.setVisible(true);
+            edit.setVisible(true);
+            delete.setVisible(true);
 
-        setVisible(true);
-        year.focus();
+            setVisible(true);
+            year.focus();
+        }
     }
-}
 
     private void cancel() {
         LOGGER.info("Button cancel clicked");

@@ -10,10 +10,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -57,24 +54,24 @@ public class BookView extends VerticalLayout {
     private final HorizontalLayout garageBigLayout = new HorizontalLayout();
     private final Paragraph carText = new Paragraph("If you have already selected garage, now pick your car below:");
     private final ComboBox<CarDto> carComboBox = new ComboBox<>("Select your car:");
-    private final Button carButton = new Button("Confirm car selection");
+    private final Button carButton = new Button("Confirm");
     private final HorizontalLayout carHorizontalComboBoxAndButtonLayout = new HorizontalLayout(carComboBox, carButton);
     private final VerticalLayout carLayout = new VerticalLayout(carText, carHorizontalComboBoxAndButtonLayout);
     private final Paragraph serviceText = new Paragraph("Below select services you wish to have:");
     private final Grid<AvailableCarServiceDto> serviceGrid = new Grid<>(AvailableCarServiceDto.class, false);
-    private final Button confirmServiceButton = new Button("Confirm chosen services");
+    private final Button confirmServiceButton = new Button("Confirm");
     private final VerticalLayout serviceLayout = new VerticalLayout(serviceText, serviceGrid, confirmServiceButton);
     private Accordion preparedBookingDetails = new Accordion();
-    private final Button backButton = new Button("Click to go back and change services");
+    private final Button backButton = new Button("Back");
     private final VerticalLayout detailsLayout = new VerticalLayout();
-    private final Paragraph dateText = new Paragraph("Now select the date you would like to have your car serviced.");
+    private final Paragraph dateText = new Paragraph("Select available date:");
     private final DatePicker datePicker = new DatePicker("Service date:");
     private final VerticalLayout forecastLayout = new VerticalLayout();
     private final HorizontalLayout dateWithForecast = new HorizontalLayout(datePicker, forecastLayout);
     private final VerticalLayout dateLayout = new VerticalLayout(dateText, dateWithForecast);
-    private final Paragraph addBookText = new Paragraph("Finally, select service time:");
-    private final ComboBox<LocalTime> timePicker = new ComboBox<>("Select available time:");
-    private final Button addBookButton = new Button("Click to book the service.");
+    private final Paragraph addBookText = new Paragraph("Select available time:");
+    private final ComboBox<LocalTime> timePicker = new ComboBox<>("Service time:");
+    private final Button addBookButton = new Button("Book service");
     private final VerticalLayout bookLayout = new VerticalLayout(addBookText, timePicker, addBookButton);
     private final H2 thankYouText = new H2("Your appointment has been successfully scheduled.");
     private final Paragraph endText = new Paragraph("Thank you for using our car service booking system.");
@@ -184,12 +181,11 @@ public class BookView extends VerticalLayout {
 
         carComboBox.setItems(carService.getCarsForGivenUsername(currentUsername));
         carComboBox.setItemLabelGenerator(carDto ->
-                carDto.getMake() + " " +
+                        carDto.getMake() + " " +
                         carDto.getModel() + " " +
                         carDto.getType() + " " +
                         carDto.getYear() + " " +
-                        carDto.getEngine()
-        );
+                        carDto.getEngine());
         carComboBox.setMaxWidth("500px");
         carComboBox.setWidthFull();
 
@@ -274,12 +270,14 @@ public class BookView extends VerticalLayout {
                 detailsLayout.setVisible(true);
                 dateLayout.setVisible(true);
                 bookLayout.setVisible(true);
+            } else {
+                Notification.show("Please select at least 1 service to proceed.");
             }
         });
     }
 
     private void formDetailsLayoutAndAddBackButtonListener() {
-        backButton.addClassName(LumoUtility.Margin.Top.LARGE);
+        backButton.addClassNames(LumoUtility.Margin.Top.MEDIUM, LumoUtility.Margin.Bottom.NONE, LumoUtility.Padding.Bottom.NONE);
         detailsLayout.setMaxWidth("600px");
         detailsLayout.setWidthFull();
 
@@ -297,20 +295,23 @@ public class BookView extends VerticalLayout {
             timePicker.setValue(null);
             timePicker.setItems(new ArrayList<>());
             bookLayout.setVisible(false);
-
         });
     }
 
     private void formForecastLayoutAndDatePicker() {
         dateWithForecast.setAlignItems(Alignment.BASELINE);
+        dateWithForecast.setWidthFull();
         forecastLayout.setSpacing(false);
-        dateText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE);
+        forecastLayout.addClassNames(LumoUtility.Margin.Bottom.NONE, LumoUtility.Padding.Bottom.NONE);
+        dateText.addClassNames(LumoUtility.Margin.Top.MEDIUM, LumoUtility.Margin.Bottom.NONE, LumoUtility.Padding.Bottom.NONE, LumoUtility.Padding.Top.NONE, LumoUtility.FontWeight.BOLD);
 
         LocalDate now = LocalDate.now();
         datePicker.setMin(now);
         datePicker.setMax(now.plusDays(60));
         datePicker.setHelperText("Service date must be within 60 days from today, remember we work Mondays - Saturdays only");
-        datePicker.addClassNames(LumoUtility.Margin.Top.NONE);
+        datePicker.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Padding.Top.NONE, LumoUtility.Margin.Bottom.NONE, LumoUtility.Padding.Bottom.NONE);
+        datePicker.setMaxWidth("300px");
+        datePicker.setWidthFull();
     }
 
     private void addDatePickerListener() {
@@ -343,9 +344,11 @@ public class BookView extends VerticalLayout {
     }
 
     private void formBookLayoutElements() {
-        addBookText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE);
+        addBookText.addClassNames(LumoUtility.Margin.Top.LARGE, LumoUtility.Margin.Bottom.NONE, LumoUtility.Padding.Bottom.NONE, LumoUtility.FontWeight.BOLD);
+        timePicker.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Padding.Top.NONE);
         timePicker.setMaxWidth("300px");
         timePicker.setWidthFull();
+        bookLayout.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Padding.Top.NONE);
         addBookButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     }
 
