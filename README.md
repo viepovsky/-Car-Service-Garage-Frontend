@@ -2,7 +2,7 @@
 
 ## 1. Description
 
-Car Service Garage is an intuitive application that allows users to book appointments for car repairs or services at various automotive workshops located in different cities. Users can easily select the workshop of their choice and the specific service they want to have performed on their car. The application offers a convenient way to browse the history of reserved services and make changes to existing reservations. The frontend version of the application provides all necessary views, to show capabilities of the backend.
+Car Service Garage is an intuitive **RESTful** application that allows users to book appointments for car repairs or services at various automotive workshops located in different cities. Users can easily select the workshop of their choice and the specific service they want to have performed on their car. The application offers a convenient way to browse the history of reserved services and make changes to existing reservations. The frontend version of the application provides all necessary views, to show capabilities of the backend.
 
 ## 2. Here is only frontend, link to backend
 
@@ -10,7 +10,7 @@ This repository contains only the frontend of Car Service Garage. To function pr
 
 ## 3. Vaadin
 
-I used Vaadin to create the frontend, and while the design is not very good-looking, it effectively shows the backend's functionalities. Additionally, the application is fully responsive and can be accessed on any device.
+I used Vaadin to create the frontend, and while the design is not very good-looking, it effectively shows the backend's functionalities. Additionally, the application is fully responsive and can be accessed on any device. Click to see actual application views: [**Application views**](https://github.com/viepovsky/Car-Service-Garage-Frontend/edit/master/README.md#8-application-views)
 
 ## 4. Usage of external API
 
