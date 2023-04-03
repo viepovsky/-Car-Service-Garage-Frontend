@@ -10,7 +10,7 @@ This repository contains only the frontend of Car Service Garage. To function pr
 
 ## 3. Vaadin
 
-I used Vaadin to create the frontend, and while the design is not very good-looking, it effectively shows the backend's functionalities. Additionally, the application is fully responsive and can be accessed on any device. Click to see actual application views: [**Application views**](https://github.com/viepovsky/Car-Service-Garage-Frontend/edit/master/README.md#8-application-views)
+I used Vaadin to create the frontend, and while the design is not very good-looking, it effectively shows the backend's functionalities. Additionally, the application is fully responsive and can be accessed on any device. Click to see actual application views: [**Application views**](https://github.com/viepovsky/Car-Service-Garage-Frontend#8-application-views)
 
 ## 4. Usage of external API
 
