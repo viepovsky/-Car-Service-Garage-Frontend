@@ -37,3 +37,27 @@ To log in as provided user, use the username: `testuser` and the password: `test
 
 Next, I will develop an ADMIN view for the application, which will allow administrators to add new garage locations and update the current status of customer cars during repairs and services.
 In addition, the view will enable administrators to manage customer accounts and their associated cars, allowing them to make changes at the customer's request.
+
+## 8. Application views:
+
+### Login View
+![Login view screenshot](src/main/resources/screenshots/Login_View.png)
+
+### Register View
+![Register view screenshot](src/main/resources/screenshots/Register_View.png)
+
+### Dashboard View
+![Main/dashboard view screenshot](src/main/resources/screenshots/Main_View.png)
+
+### Cars View
+![Cars view screenshot](src/main/resources/screenshots/Cars_View.png)
+
+### Book View
+![Book view screenshot](src/main/resources/screenshots/Book_View.png)
+![Book view 2nd screenshot](src/main/resources/screenshots/Book_View2.png)
+
+### Services View
+![Services view screenshot](src/main/resources/screenshots/Services_View.png)
+
+### User View
+![User view screenshot](src/main/resources/screenshots/User_View.png)
