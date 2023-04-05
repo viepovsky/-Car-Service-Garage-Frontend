@@ -14,22 +14,22 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "/", layout = MainLayout.class)
 @PageTitle("Main Page | Garage Booking Service")
 public class MainView extends VerticalLayout {
-    private final Image img = new Image("images/car_workshop.jpg", "car workshop");
+    private final Image img = new Image("images/car_garage_banner2.jpg", "car workshop");
 
     public MainView() {
+        addImage();
+
         addMainViewLayoutSetting();
 
         addPageHeader();
 
         addWelcomeText();
-
-        addImage();
     }
     private void addMainViewLayoutSetting() {
         setSpacing(false);
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.START);
-        setDefaultHorizontalComponentAlignment(Alignment.START);
+        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
     }
 
     private void addPageHeader() {
@@ -46,8 +46,10 @@ public class MainView extends VerticalLayout {
     }
 
     private void addImage() {
-        img.setWidth("500px");
-        img.addClassNames(LumoUtility.Margin.Top.XLARGE);
+        img.setMaxHeight("350px");
+        img.setMaxWidth("1000px");
+        img.setWidthFull();
+        img.addClassNames(LumoUtility.Margin.Top.NONE, LumoUtility.Margin.Bottom.SMALL);
         add(img);
     }
 }
