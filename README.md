@@ -4,13 +4,15 @@
 
 Car Service Garage is an intuitive **RESTful** application that allows users to book appointments for car repairs or services at various automotive workshops located in different cities. Users can easily select the workshop of their choice and the specific service they want to have performed on their car. The application offers a convenient way to browse the history of reserved services and make changes to existing reservations. The frontend version of the application provides all necessary views, to show capabilities of the backend.
 
-## 2. Here is only frontend, link to backend
+## 2. This is frontend repository, link to backend
 
 This repository contains only the frontend of Car Service Garage. To function properly, it must be run in conjunction with the backend version, which can be found here: [**GitHub**](https://github.com/viepovsky/Car-Service-Garage-Backend).
 
 ## 3. Vaadin
 
 I used Vaadin to create the frontend, and while the design is not very good-looking, it effectively shows the backend's functionalities. Additionally, the application is fully responsive and can be accessed on any device. Click to see actual application views: [**Application views**](https://github.com/viepovsky/Car-Service-Garage-Frontend#8-application-views)
+
+Other frameworks, technologies used in application: Spring Boot, Spring Web, Spring Validation, Spring Security, Lombok
 
 ## 4. Usage of external API
 
@@ -23,7 +25,7 @@ Car API is used to retrieve car details when user adds or edits their car. The w
 
 ## 5. How to run
 
-To run whole application, you need to first run the backend by running `AppBackendApplication` class. Once that is done, to run the frontend, simply type `mvnw` (Windows) or `./mvnw` (Mac & Linux) in terminal IDE. Then, if the browser does not open automatically, you can access the application by opening http://localhost:8081 in your browser.
+To run whole application, you need to first run the backend by running `AppBackendApplication` class or simply type `./gradlew bootRun` in terminal IDE. Once that is done, to run the frontend, run `Application` class or simply type `./mvnw spring-boot:run` in terminal IDE. Then, if the browser does not open automatically, you can access the application by opening http://localhost:8081 in your browser.
 
 In case of problems on Mac with the error message `zsh: permission denied: ./mvnw`, simply type `chmod +x ./mvnw` in terminal IDE to make the file executable, and then type `./mvnw` again to start the application.
 
