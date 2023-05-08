@@ -1,9 +1,14 @@
 package com.frontend.client;
 
 import com.frontend.config.BackendConfig;
+import com.vaadin.flow.server.VaadinSession;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -25,12 +30,16 @@ public class CarApiClient {
 
     public List<String> getCarMakes() {
         try {
+            HttpHeaders header = createJwtHeader();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(header);
+
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiMakesEndpoint() + "/makes")
                     .build()
                     .encode()
                     .toUri();
-            String[] response = restTemplate.getForObject(url, String[].class);
-            return Arrays.asList(ofNullable(response).orElse(new String[0]));
+
+            ResponseEntity<String[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String[].class);
+            return Arrays.asList(ofNullable(response.getBody()).orElse(new String[0]));
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
             return new ArrayList<>();
@@ -39,12 +48,16 @@ public class CarApiClient {
 
     public List<String> getCarTypes() {
         try {
+            HttpHeaders header = createJwtHeader();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(header);
+
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiMakesEndpoint() + "/types")
                     .build()
                     .encode()
                     .toUri();
-            String[] response = restTemplate.getForObject(url, String[].class);
-            return Arrays.asList(ofNullable(response).orElse(new String[0]));
+
+            ResponseEntity<String[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String[].class);
+            return Arrays.asList(ofNullable(response.getBody()).orElse(new String[0]));
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
             return new ArrayList<>();
@@ -53,12 +66,16 @@ public class CarApiClient {
 
     public List<Integer> getCarYears() {
         try {
+            HttpHeaders header = createJwtHeader();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(header);
+
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiMakesEndpoint() + "/years")
                     .build()
                     .encode()
                     .toUri();
-            Integer[] response = restTemplate.getForObject(url, Integer[].class);
-            return Arrays.asList(ofNullable(response).orElse(new Integer[0]));
+
+            ResponseEntity<Integer[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Integer[].class);
+            return Arrays.asList(ofNullable(response.getBody()).orElse(new Integer[0]));
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
             return new ArrayList<>();
@@ -67,6 +84,9 @@ public class CarApiClient {
 
     public List<String> getCarModels(String make, String type, Integer year) {
         try {
+            HttpHeaders header = createJwtHeader();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(header);
+
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiMakesEndpoint())
                     .queryParam("year", year)
                     .queryParam("make", make)
@@ -74,11 +94,19 @@ public class CarApiClient {
                     .build()
                     .encode()
                     .toUri();
-            String[] response = restTemplate.getForObject(url, String[].class);
-            return Arrays.asList(ofNullable(response).orElse(new String[0]));
+
+            ResponseEntity<String[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String[].class);
+            return Arrays.asList(ofNullable(response.getBody()).orElse(new String[0]));
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
             return new ArrayList<>();
         }
+    }
+
+    private HttpHeaders createJwtHeader() {
+        String jwtToken = VaadinSession.getCurrent().getAttribute("jwt").toString();
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "Bearer " + jwtToken);
+        return header;
     }
 }
