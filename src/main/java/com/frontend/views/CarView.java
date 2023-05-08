@@ -3,7 +3,7 @@ package com.frontend.views;
 import com.frontend.domainDto.request.CarCreateDto;
 import com.frontend.service.CarApiService;
 import com.frontend.service.CarService;
-import com.frontend.service.ServiceCarService;
+import com.frontend.service.CarRepairService;
 import com.frontend.views.layout.CarForm;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.button.Button;
@@ -27,10 +27,10 @@ public class CarView extends VerticalLayout {
     private final CarForm form;
     private final Grid<CarCreateDto> carGrid = new Grid<>(CarCreateDto.class);
     private final Button addNewCar = new Button("Add new car");
-    public CarView(CarService carService, CarApiService carApiService, ServiceCarService serviceCarService) {
+    public CarView(CarService carService, CarApiService carApiService, CarRepairService carRepairService) {
         this.carService = carService;
 
-        form = new CarForm(carApiService, carService, this, serviceCarService);
+        form = new CarForm(carApiService, carService, this, carRepairService);
         form.setCarCreateDto(null);
 
         addAndSetHeader();

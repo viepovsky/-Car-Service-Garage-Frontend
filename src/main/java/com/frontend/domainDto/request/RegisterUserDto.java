@@ -30,6 +30,6 @@ public class RegisterUserDto {
     @Size(min = 3, max = 50, message = "Username should be at least 3 characters, with maximum of 50.")
     private String username;
 
-    @Pattern(regexp = "(?=.*[A-Z])(?=.*[\\W])(?=\\S+$).{8,}", message = "Password should contain at least 8 characters, one uppercase letter, and one special character.")
+    @Pattern(regexp = "(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W])(?=\\S+$).{8,}", message = "Password should contain at least 8 characters, one uppercase letter, one lowercase letter, and one special character.")
     private String password;
 }

@@ -1,9 +1,9 @@
 package com.frontend.views;
 
-import com.frontend.domainDto.response.CarServiceDto;
+import com.frontend.domainDto.response.CarRepairDto;
 import com.frontend.domainDto.response.ForecastDto;
 import com.frontend.service.BookingService;
-import com.frontend.service.ServiceCarService;
+import com.frontend.service.CarRepairService;
 import com.frontend.service.WeatherApiService;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.button.Button;
@@ -46,17 +46,17 @@ import java.util.Optional;
 public class ServiceView extends Div {
     private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceView.class);
-    private final ServiceCarService serviceCarService;
+    private final CarRepairService carRepairService;
     private final BookingService bookingService;
     private final WeatherApiService weatherApiService;
-    private CarServiceDto selectedCarService;
+    private CarRepairDto selectedCarService;
     private LocalDate selectedNewDate;
     private LocalTime selectedNewStartTime;
-    private List<CarServiceDto> carServiceDtoList;
-    private final Grid<CarServiceDto> serviceDtoGrid = new Grid<>(CarServiceDto.class, false);
-    private List<CarServiceDto> incomingServiceList;
-    private List<CarServiceDto> inProgressServiceList;
-    private List<CarServiceDto> completedServiceList;
+    private List<CarRepairDto> carRepairDtoList;
+    private final Grid<CarRepairDto> serviceDtoGrid = new Grid<>(CarRepairDto.class, false);
+    private List<CarRepairDto> incomingServiceList;
+    private List<CarRepairDto> inProgressServiceList;
+    private List<CarRepairDto> completedServiceList;
     private Tab incomingServiceTab;
     private Tab inProgressTab;
     private Tab completedServiceTab;
@@ -68,8 +68,9 @@ public class ServiceView extends Div {
     private final Button editButton = new Button("Edit service time");
     private final Button cancelButton = new Button("Cancel service");
     private HorizontalLayout horizontalButtonsLayout;
-    public ServiceView(ServiceCarService serviceCarService, BookingService bookingService, WeatherApiService weatherApiService) {
-        this.serviceCarService = serviceCarService;
+
+    public ServiceView(CarRepairService carRepairService, BookingService bookingService, WeatherApiService weatherApiService) {
+        this.carRepairService = carRepairService;
         this.bookingService = bookingService;
         this.weatherApiService = weatherApiService;
 
@@ -102,16 +103,16 @@ public class ServiceView extends Div {
     }
 
     private void formIncomingGrid() {
-        serviceDtoGrid.addColumn(CarServiceDto::getCarDto).setHeader("Serviced car").setAutoWidth(true);
-        serviceDtoGrid.addColumn(CarServiceDto::getName).setHeader("Service").setAutoWidth(true);
-        serviceDtoGrid.addColumn(CarServiceDto::getCost).setHeader("Cost [PLN]").setAutoWidth(true).setFlexGrow(0);
+        serviceDtoGrid.addColumn(CarRepairDto::getCarDto).setHeader("Serviced car").setAutoWidth(true);
+        serviceDtoGrid.addColumn(CarRepairDto::getName).setHeader("Service").setAutoWidth(true);
+        serviceDtoGrid.addColumn(CarRepairDto::getCost).setHeader("Cost [PLN]").setAutoWidth(true).setFlexGrow(0);
         serviceDtoGrid.addColumn(n -> n.getBookingDto().getDate().atTime(n.getBookingDto().getStartHour()).format(DateTimeFormatter.ofPattern("HH:mm, dd-MM-yyyy")))
                 .setHeader("Start time, date").setAutoWidth(true).setSortable(true);
         serviceDtoGrid.addColumn(n -> n.getBookingDto().getEndHour()).setHeader("Estimated end time").setAutoWidth(true).setFlexGrow(0).setKey("End");
-        serviceDtoGrid.addColumn(CarServiceDto::getRepairTimeInMinutes).setHeader("Repair time [min]").setAutoWidth(true).setFlexGrow(0);
+        serviceDtoGrid.addColumn(CarRepairDto::getRepairTimeInMinutes).setHeader("Repair time [min]").setAutoWidth(true).setFlexGrow(0);
         serviceDtoGrid.addColumn(n -> n.getBookingDto().getGarageDto().getName()).setHeader("Garage").setAutoWidth(true);
         serviceDtoGrid.addColumn(n -> n.getBookingDto().getGarageDto().getAddress()).setHeader("Garage address").setAutoWidth(true);
-        serviceDtoGrid.addColumn(CarServiceDto::getStatus).setHeader("Status").setAutoWidth(true).setFlexGrow(0).setKey("Stat");
+        serviceDtoGrid.addColumn(CarRepairDto::getStatus).setHeader("Status").setAutoWidth(true).setFlexGrow(0).setKey("Stat");
 
         serviceDtoGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         serviceDtoGrid.setMaxHeight("300px");
@@ -119,11 +120,11 @@ public class ServiceView extends Div {
     }
 
     private void fetchCarServicesFromDb() {
-        carServiceDtoList = serviceCarService.getCarServices(currentUsername);
+        carRepairDtoList = carRepairService.getCarServices(currentUsername);
     }
 
     private void filterCarServiceLists() {
-        incomingServiceList = carServiceDtoList.stream()
+        incomingServiceList = carRepairDtoList.stream()
                 .peek(n -> {
                     BigDecimal cost = n.getCost().setScale(0, RoundingMode.HALF_DOWN);
                     n.setCost(cost);
@@ -131,16 +132,16 @@ public class ServiceView extends Div {
                 .filter(n -> n.getBookingDto().getDate().atTime(n.getBookingDto().getStartHour()).isAfter(LocalDateTime.now()))
                 .toList();
 
-        inProgressServiceList = carServiceDtoList.stream()
+        inProgressServiceList = carRepairDtoList.stream()
                 .peek(n -> {
                     BigDecimal cost = n.getCost().setScale(0, RoundingMode.HALF_DOWN);
                     n.setCost(cost);
                 })
                 .filter(n -> n.getBookingDto().getDate().atTime(n.getBookingDto().getStartHour()).isBefore(LocalDateTime.now())
-                && n.getBookingDto().getDate().atTime(n.getBookingDto().getEndHour()).isAfter(LocalDateTime.now()))
+                        && n.getBookingDto().getDate().atTime(n.getBookingDto().getEndHour()).isAfter(LocalDateTime.now()))
                 .toList();
 
-        completedServiceList = carServiceDtoList.stream()
+        completedServiceList = carRepairDtoList.stream()
                 .peek(n -> {
                     BigDecimal cost = n.getCost().setScale(0, RoundingMode.HALF_DOWN);
                     n.setCost(cost);
@@ -153,9 +154,9 @@ public class ServiceView extends Div {
         if (selectedTab.equals(incomingServiceTab)) {
             serviceDtoGrid.setItems(incomingServiceList);
 
-            Grid.Column<CarServiceDto> column = serviceDtoGrid.getColumnByKey("End");
+            Grid.Column<CarRepairDto> column = serviceDtoGrid.getColumnByKey("End");
             column.setHeader("Estimated end time");
-            Grid.Column<CarServiceDto> column2 = serviceDtoGrid.getColumnByKey("Stat");
+            Grid.Column<CarRepairDto> column2 = serviceDtoGrid.getColumnByKey("Stat");
             column2.setFlexGrow(0);
 
             datePicker.setValue(null);
@@ -167,9 +168,9 @@ public class ServiceView extends Div {
         } else if (selectedTab.equals(inProgressTab)) {
             serviceDtoGrid.setItems(inProgressServiceList);
 
-            Grid.Column<CarServiceDto> column = serviceDtoGrid.getColumnByKey("End");
+            Grid.Column<CarRepairDto> column = serviceDtoGrid.getColumnByKey("End");
             column.setHeader("Estimated end time");
-            Grid.Column<CarServiceDto> column2 = serviceDtoGrid.getColumnByKey("Stat");
+            Grid.Column<CarRepairDto> column2 = serviceDtoGrid.getColumnByKey("Stat");
             column2.setAutoWidth(true).setFlexGrow(1);
 
             horizontalPickersLayout.setVisible(false);
@@ -177,9 +178,9 @@ public class ServiceView extends Div {
         } else if (selectedTab.equals(completedServiceTab)) {
             serviceDtoGrid.setItems(completedServiceList);
 
-            Grid.Column<CarServiceDto> column = serviceDtoGrid.getColumnByKey("End");
+            Grid.Column<CarRepairDto> column = serviceDtoGrid.getColumnByKey("End");
             column.setHeader("End time");
-            Grid.Column<CarServiceDto> column2 = serviceDtoGrid.getColumnByKey("Stat");
+            Grid.Column<CarRepairDto> column2 = serviceDtoGrid.getColumnByKey("Stat");
             column2.setAutoWidth(true).setFlexGrow(1);
 
             horizontalPickersLayout.setVisible(false);
@@ -222,7 +223,7 @@ public class ServiceView extends Div {
             }
             if (!datePicker.isInvalid() && datePicker.getValue() != null) {
                 selectedNewDate = datePicker.getValue();
-                if (!selectedNewDate.isAfter(LocalDate.now().plusDays(13))){
+                if (!selectedNewDate.isAfter(LocalDate.now().plusDays(13))) {
                     setWeather();
                 } else {
                     forecastLayout.add(new Span("Forecast is only available for 13 days ahead."));
@@ -236,7 +237,7 @@ public class ServiceView extends Div {
     private void setWeather() {
         String address = selectedCarService.getBookingDto().getGarageDto().getAddress();
         ForecastDto forecastDto = weatherApiService.getWeatherForCityAndDate(address.substring(0, address.indexOf(" ")), selectedNewDate);
-        Span span = new Span("Weather for city: " + address.substring(0, address.indexOf(" ")) + ", and date: " + selectedNewDate );
+        Span span = new Span("Weather for city: " + address.substring(0, address.indexOf(" ")) + ", and date: " + selectedNewDate);
         Span span1 = new Span("Weather is: " + forecastDto.getSymbolPhrase().substring(0, 1).toUpperCase() + forecastDto.getSymbolPhrase().substring(1));
         Span span2 = new Span("Max temp. " + forecastDto.getMaxTemp() + "\u00B0C, min temp. " + forecastDto.getMinTemp() + "\u00B0C. Wind up to " + forecastDto.getMaxWindSpeed() + "km/h.");
         span.addClassNames(LumoUtility.FontWeight.BOLD);
@@ -268,8 +269,8 @@ public class ServiceView extends Div {
 
     private void addListenersToGrid() {
         serviceDtoGrid.addSelectionListener(selection -> {
-            if (tabs.getSelectedTab().equals(incomingServiceTab)){
-                Optional<CarServiceDto> optionalCarServiceDto = selection.getFirstSelectedItem();
+            if (tabs.getSelectedTab().equals(incomingServiceTab)) {
+                Optional<CarRepairDto> optionalCarServiceDto = selection.getFirstSelectedItem();
                 if (optionalCarServiceDto.isPresent()) {
                     selectedCarService = optionalCarServiceDto.get();
                     LOGGER.info("Selected CarService: " + selectedCarService.getName() + ", with car: " + selectedCarService.getCarDto().toString());
@@ -297,7 +298,7 @@ public class ServiceView extends Div {
     private void addListenersToButtons() {
         cancelButton.addClickListener(event -> {
             if (LocalDateTime.now().plusHours(2).isBefore(selectedCarService.getBookingDto().getDate().atTime(selectedCarService.getBookingDto().getStartHour()))) {
-                serviceCarService.cancelService(selectedCarService.getId());
+                carRepairService.cancelService(selectedCarService.getId());
                 Notification.show("Service canceled");
                 fetchCarServicesFromDb();
                 filterCarServiceLists();
@@ -312,7 +313,7 @@ public class ServiceView extends Div {
 
         editButton.addClickListener(event -> {
             if (LocalDateTime.now().plusHours(2).isBefore(selectedCarService.getBookingDto().getDate().atTime(selectedCarService.getBookingDto().getStartHour()))) {
-                if (selectedNewDate != null && selectedNewStartTime != null){
+                if (selectedNewDate != null && selectedNewStartTime != null) {
                     bookingService.updateBooking(selectedCarService.getBookingDto().getId(), selectedNewDate, selectedNewStartTime);
                     Notification.show("Service time changed");
                     fetchCarServicesFromDb();

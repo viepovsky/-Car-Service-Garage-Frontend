@@ -1,7 +1,7 @@
 package com.frontend.client;
 
 import com.frontend.config.BackendConfig;
-import com.frontend.domainDto.response.CarServiceDto;
+import com.frontend.domainDto.response.CarRepairDto;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,20 +19,20 @@ import static java.util.Optional.ofNullable;
 
 @Component
 @AllArgsConstructor
-public class CarServiceClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CarServiceClient.class);
+public class CarRepairClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CarRepairClient.class);
     private final RestTemplate restTemplate;
     private final BackendConfig backendConfig;
 
-    public List<CarServiceDto> getCarServices(String username) {
+    public List<CarRepairDto> getCarServices(String username) {
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarServiceApiEndpoint())
                     .queryParam("username", username)
                     .build()
                     .encode()
                     .toUri();
-            CarServiceDto[] response = restTemplate.getForObject(url, CarServiceDto[].class);
-            return Arrays.asList(ofNullable(response).orElse(new CarServiceDto[0]));
+            CarRepairDto[] response = restTemplate.getForObject(url, CarRepairDto[].class);
+            return Arrays.asList(ofNullable(response).orElse(new CarRepairDto[0]));
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
             return new ArrayList<>();

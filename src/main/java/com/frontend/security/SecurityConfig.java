@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
-
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig extends VaadinWebSecurity {

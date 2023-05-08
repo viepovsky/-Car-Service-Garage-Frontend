@@ -1,7 +1,7 @@
 package com.frontend.service;
 
 import com.frontend.client.BookingClient;
-import com.frontend.domainDto.response.CarServiceDto;
+import com.frontend.domainDto.response.CarRepairDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class BookingService {
         return localTimeList;
     }
 
-    public List<LocalTime> getAvailableBookingTimes(LocalDate selectedNewDate, CarServiceDto selectedCarService) {
+    public List<LocalTime> getAvailableBookingTimes(LocalDate selectedNewDate, CarRepairDto selectedCarService) {
         LOGGER.info("Given parameters to get available times, date: " + selectedNewDate + ", selected CarService: " + selectedCarService);
         List<LocalTime> localTimeList = bookingClient.getAvailableBookingTimes(selectedNewDate, selectedCarService.getId());
         LOGGER.info("Retrieved LocalTime list with size of: " + localTimeList.size());
