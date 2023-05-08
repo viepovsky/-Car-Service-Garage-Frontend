@@ -1,7 +1,7 @@
 package com.frontend.client;
 
 import com.frontend.config.BackendConfig;
-import com.frontend.domainDto.response.GarageDto;
+import com.frontend.domainDto.response.AvailableCarRepairDto;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -24,23 +24,22 @@ import static java.util.Optional.ofNullable;
 
 @Component
 @AllArgsConstructor
-public class GarageClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GarageClient.class);
+public class AvailableCarRepairClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AvailableCarRepairClient.class);
     private final RestTemplate restTemplate;
     private final BackendConfig backendConfig;
 
-    public List<GarageDto> getGarages() {
+    public List<AvailableCarRepairDto> getALlAvailableServices(Long garageId) {
         try {
             HttpHeaders header = createJwtHeader();
             HttpEntity<Void> requestEntity = new HttpEntity<>(header);
 
-            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getGarageApiEndpoint())
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getAvailableCarServiceApiEndpoint() + "/" + garageId)
                     .build()
                     .encode()
                     .toUri();
-
-            ResponseEntity<GarageDto[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, GarageDto[].class);
-            return Arrays.asList(ofNullable(response.getBody()).orElse(new GarageDto[0]));
+            ResponseEntity<AvailableCarRepairDto[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, AvailableCarRepairDto[].class);
+            return Arrays.asList(ofNullable(response.getBody()).orElse(new AvailableCarRepairDto[0]));
         } catch (RestClientException e) {
             LOGGER.error(e.getMessage(), e);
             return new ArrayList<>();

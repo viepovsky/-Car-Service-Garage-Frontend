@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CarServiceDto {
+public class AvailableCarRepairDto {
     @JsonProperty("id")
     private Long id;
 
@@ -28,12 +28,9 @@ public class CarServiceDto {
     @JsonProperty("repairTimeInMinutes")
     private int repairTimeInMinutes;
 
-    @JsonProperty("carDto")
-    private CarDto carDto;
+    @JsonProperty("premiumMakes")
+    private String premiumMakes;
 
-    @JsonProperty("bookingDto")
-    private BookingDto bookingDto;
-
-    @JsonProperty("status")
-    private String status;
+    @JsonProperty("makeMultiplier")
+    private BigDecimal makeMultiplier;
 }

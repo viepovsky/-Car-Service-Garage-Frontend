@@ -1,6 +1,7 @@
 package com.frontend.views;
 
 import com.frontend.domainDto.request.RegisterUserDto;
+import com.frontend.service.AuthenticationService;
 import com.frontend.service.LoginRegisterService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -27,6 +28,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 @AnonymousAllowed
 public class RegisterView extends VerticalLayout {
     private final LoginRegisterService loginRegisterService;
+    private final AuthenticationService authenticationService;
     private final Binder<RegisterUserDto> binder = new BeanValidationBinder<>(RegisterUserDto.class);
     private final TextField firstName = new TextField("First name");
     private final TextField lastName = new TextField("Last name");
@@ -38,8 +40,10 @@ public class RegisterView extends VerticalLayout {
     private final Button loginButton = new Button("Log in here if you already have account.");
     private final VerticalLayout centerFormLayout = new VerticalLayout();
     private final FormLayout formLayout = new FormLayout();
-    public RegisterView(LoginRegisterService loginRegisterService) {
+
+    public RegisterView(LoginRegisterService loginRegisterService, AuthenticationService authenticationService) {
         this.loginRegisterService = loginRegisterService;
+        this.authenticationService = authenticationService;
 
         binder.bindInstanceFields(this);
 
@@ -74,7 +78,7 @@ public class RegisterView extends VerticalLayout {
 
     private void addCenterFormLayoutSettings() {
         centerFormLayout.setAlignItems(Alignment.CENTER);
-        centerFormLayout.setHorizontalComponentAlignment( Alignment.CENTER, formLayout);
+        centerFormLayout.setHorizontalComponentAlignment(Alignment.CENTER, formLayout);
         centerFormLayout.setSizeFull();
         add(centerFormLayout);
     }
@@ -94,12 +98,12 @@ public class RegisterView extends VerticalLayout {
 
     private void addButtonClickListeners() {
         createUserButton.addClickListener(e -> {
-            RegisterUserDto registerUserDto = new RegisterUserDto();
-            if (binder.writeBeanIfValid(registerUserDto)){
-                if(loginRegisterService.isRegistered(registerUserDto.getUsername())){
-                    Notification.show("Account with given username: " + registerUserDto.getUsername() + " already exist. Change the username in order to register new account.");
+            RegisterUserDto userToRegister = new RegisterUserDto();
+            if (binder.writeBeanIfValid(userToRegister)) {
+                if (loginRegisterService.isRegistered(userToRegister.getUsername())) {
+                    Notification.show("Account with given username: " + userToRegister.getUsername() + " already exist. Change the username in order to register new account.");
                 } else {
-                    loginRegisterService.createUser(registerUserDto);
+                    authenticationService.registerUser(userToRegister);
                     Notification.show("Account created, you can log in now.");
                     clearForm();
                 }

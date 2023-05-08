@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 public class BackendConfig {
     @Value("${availableCarService.api.endpoint}")
     private String availableCarServiceApiEndpoint;
+    @Value("${authentication.api.endpoint}")
+    private String authenticationApiEndpoint;
     @Value("${booking.api.endpoint}")
     private String bookingApiEndpoint;
     @Value("${car.api.endpoint}")
