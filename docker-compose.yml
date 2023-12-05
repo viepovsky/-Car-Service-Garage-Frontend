@@ -1,7 +1,18 @@
 services:
+  garage-service-backend:
+    container_name: garage-backend
+    image: viepovsky/car-service-garage-backend:latest
+    environment:
+      - CAR_SERVICE_GARAGE_SECRET_KEY=840fac1f38c240c3a949d2b7bcebd92195931b5ebb12f5a6dc121303c81ee086
+    ports:
+      - 8080:8080
+    networks:
+      - garage-service
+    restart: unless-stopped
+
   garage-service-frontend:
     container_name: garage-frontend
-    image: garage-service-frontend:latest
+    image: viepovsky/car-service-garage-frontend:latest
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     ports:
@@ -9,6 +20,8 @@ services:
     networks:
       - garage-service
     restart: unless-stopped
+    depends_on:
+      - garage-service-backend
 
 networks:
   garage-service:
