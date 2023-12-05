@@ -24,10 +24,18 @@ At the moment, the application is using two external API:
 Car API is used to retrieve car details when user adds or edits their car. The weather API is used during booking, to show the weather near selected workshop on the selected date. 
 
 ## 5. How to run
+### Using Docker
+If Docker is installed and running you can simply run the entire application by executing `docker compose up -d` in the terminal.
+Wait for containers to start then open `http://localhost:8081` to test the application.
 
-To run whole application, you need to first run the backend by running `AppBackendApplication` class or simply type `./gradlew bootRun` in terminal IDE. Once that is done, to run the frontend, run `Application` class or simply type `./mvnw spring-boot:run` in terminal IDE. Then, if the browser does not open automatically, you can access the application by opening http://localhost:8081 in your browser.
+### Without Docker
+If Docker is not installed, follow the instructions below:
 
-In case of problems on Mac with the error message `zsh: permission denied: ./mvnw`, simply type `chmod +x ./mvnw` in terminal IDE to make the file executable, and then type `./mvnw` again to start the application.
+- First run the backend by running `AppBackendApplication` class or simply type `./gradlew bootRun` in terminal. 
+- To start the frontend, run `Application` class or simply type `./mvnw spring-boot:run` in terminal.
+- Wait for the applications to start then open `http://localhost:8081` to test the application.
+
+If you encounter permission issues on Mac/Linux with the error message `zsh: permission denied: ./mvnw`, simply type `chmod +x ./mvnw` in terminal to make the `mvnw` file executable. Then type `./mvnw spring-boot:run` again to start the application.
 
 ## 6. Logging to site, initial data
 
