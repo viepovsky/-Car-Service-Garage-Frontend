@@ -1,7 +1,15 @@
 services:
   garage-service-frontend:
     container_name: garage-frontend
-    image: viepovsky/car-service-garage-frontend:latest
+    image: garage-service-frontend:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 8081:8081
+    networks:
+      - garage-service
     restart: unless-stopped
+
+networks:
+  garage-service:
+    driver: bridge
