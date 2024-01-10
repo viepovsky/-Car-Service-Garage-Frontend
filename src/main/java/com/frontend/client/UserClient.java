@@ -60,22 +60,6 @@ public class UserClient {
         }
     }
 
-    public void createUser(RegisterUserDto registerUserDto) {
-        try {
-            HttpHeaders header = createJwtHeader();
-            HttpEntity<RegisterUserDto> requestEntity = new HttpEntity<>(registerUserDto, header);
-
-            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getUserApiEndpoint())
-                    .build()
-                    .encode()
-                    .toUri();
-
-            restTemplate.exchange(url, HttpMethod.POST, requestEntity, Void.class);
-        } catch (RestClientException e) {
-            LOGGER.error(e.getMessage());
-        }
-    }
-
     public Boolean isRegistered(String username) {
         try {
             URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getUserApiEndpoint() + "/is-registered")
