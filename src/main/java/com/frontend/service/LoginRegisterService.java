@@ -20,17 +20,6 @@ public class LoginRegisterService {
         return userClient.getUserForLogin(username);
     }
 
-    public void createUser(RegisterUserDto registerUserDto) {
-        if (registerUserDto == null) {
-            LOGGER.error("Given object for registration is null.");
-            return;
-        }
-        LOGGER.info("Creating user with username: " + registerUserDto.getUsername());
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        registerUserDto.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
-        userClient.createUser(registerUserDto);
-    }
-
     public boolean isRegistered(String username) {
         return userClient.isRegistered(username);
     }
