@@ -1,9 +1,8 @@
 package com.frontend.views;
 
 import com.frontend.domainDto.request.CarCreateDto;
-import com.frontend.service.CarApiService;
-import com.frontend.service.CarService;
 import com.frontend.service.CarRepairService;
+import com.frontend.service.CarService;
 import com.frontend.views.layout.CarForm;
 import com.frontend.views.layout.MainLayout;
 import com.vaadin.flow.component.button.Button;
@@ -15,7 +14,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import jakarta.annotation.security.PermitAll;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @PermitAll
@@ -27,10 +28,10 @@ public class CarView extends VerticalLayout {
     private final CarForm form;
     private final Grid<CarCreateDto> carGrid = new Grid<>(CarCreateDto.class);
     private final Button addNewCar = new Button("Add new car");
-    public CarView(CarService carService, CarApiService carApiService, CarRepairService carRepairService) {
+    public CarView(CarService carService, CarRepairService carRepairService) {
         this.carService = carService;
 
-        form = new CarForm(carApiService, carService, this, carRepairService);
+        form = new CarForm(carService, this, carRepairService);
         form.setCarCreateDto(null);
 
         addAndSetHeader();
