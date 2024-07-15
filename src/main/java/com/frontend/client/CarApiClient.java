@@ -64,24 +64,6 @@ public class CarApiClient {
         }
     }
 
-    public List<Integer> getCarYears() {
-        try {
-            HttpHeaders header = createJwtHeader();
-            HttpEntity<Void> requestEntity = new HttpEntity<>(header);
-
-            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiMakesEndpoint() + "/years")
-                    .build()
-                    .encode()
-                    .toUri();
-
-            ResponseEntity<Integer[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Integer[].class);
-            return Arrays.asList(ofNullable(response.getBody()).orElse(new Integer[0]));
-        } catch (RestClientException e) {
-            LOGGER.error(e.getMessage(), e);
-            return new ArrayList<>();
-        }
-    }
-
     public List<String> getCarModels(String make, String type, Integer year) {
         try {
             HttpHeaders header = createJwtHeader();

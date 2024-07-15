@@ -24,11 +24,6 @@ public class CarApiService {
         return carApiClient.getCarTypes();
     }
 
-    public List<Integer> getCarYears() {
-        LOGGER.info("Getting car years.");
-        return carApiClient.getCarYears();
-    }
-
     public List<String> getCarModels(String make, String type, Integer year) {
         LOGGER.info("Getting car models.");
         List<String> carModelsList = carApiClient.getCarModels(make, type, year);

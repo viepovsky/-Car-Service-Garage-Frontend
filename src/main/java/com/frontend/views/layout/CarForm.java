@@ -18,7 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class CarForm extends FormLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarForm.class);
@@ -27,7 +29,7 @@ public class CarForm extends FormLayout {
     private final CarService carService;
     private final CarView carView;
     private final CarRepairService carRepairService;
-    private List<Integer> carYearList;
+    private List<Integer> carYears;
     private final ComboBox<Integer> year = new ComboBox<>("Year");
     private final ComboBox<String> make = new ComboBox<>("Make");
     private final ComboBox<String> type = new ComboBox<>("Type");
@@ -56,18 +58,24 @@ public class CarForm extends FormLayout {
     }
 
     private void setYearsMakesTypesLists() {
-        carYearList = carApiService.getCarYears();
+        carYears = generateCarYears();
         List<String> carMakeList = carApiService.getCarMakes();
         List<String> carTypeList = carApiService.getCarTypes();
         List<String> carEnginesList = Arrays.asList("Petrol", "Diesel", "Hybrid", "Electric", "LPG", "Other");
-        Collections.sort(carYearList);
+        Collections.sort(carYears);
         Collections.sort(carMakeList);
         Collections.sort(carTypeList);
 
-        year.setItems(carYearList);
+        year.setItems(carYears);
         make.setItems(carMakeList);
         type.setItems(carTypeList);
         engine.setItems(carEnginesList);
+    }
+
+    private List<Integer> generateCarYears() {
+        List<Integer> carYears = new ArrayList<>();
+        IntStream.rangeClosed(1950, LocalDateTime.now().getYear()).forEach(carYears::add);
+        return carYears;
     }
 
     private void addFieldsAndButtons() {
@@ -128,7 +136,7 @@ public class CarForm extends FormLayout {
 
             setVisible(true);
             year.focus();
-            year.setValue(carYearList.get(0));
+            year.setValue(carYears.get(0));
         } else {
             LOGGER.info("Getting car models with values: " + carCreateDto.getMake() + ", " + carCreateDto.getType() + ", " + carCreateDto.getYear());
             List<String> modelList = carApiService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
