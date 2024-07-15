@@ -19,15 +19,10 @@ public class CarApiService {
         return carApiClient.getCarMakes();
     }
 
-    public List<String> getCarTypes() {
-        LOGGER.info("Getting car types.");
-        return carApiClient.getCarTypes();
-    }
-
     public List<String> getCarModels(String make, String type, Integer year) {
         LOGGER.info("Getting car models.");
         List<String> carModelsList = carApiClient.getCarModels(make, type, year);
-        LOGGER.info("Car models received: " + carModelsList);
+        LOGGER.info("Car models received: {}", carModelsList);
         return carModelsList;
     }
 }

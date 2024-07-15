@@ -60,11 +60,19 @@ public class CarForm extends FormLayout {
     private void setYearsMakesTypesLists() {
         carYears = generateCarYears();
         List<String> carMakeList = carApiService.getCarMakes();
-        List<String> carTypeList = carApiService.getCarTypes();
-        List<String> carEnginesList = Arrays.asList("Petrol", "Diesel", "Hybrid", "Electric", "LPG", "Other");
-        Collections.sort(carYears);
-        Collections.sort(carMakeList);
-        Collections.sort(carTypeList);
+        List<String> carTypeList =
+                List.of(
+                        "SEDAN",
+                        "WAGON",
+                        "HATCHBACK",
+                        "CONVERTIBLE",
+                        "SUV",
+                        "MOTORCYCLE",
+                        "PICKUP",
+                        "VAN",
+                        "COUPE");
+        List<String> carEnginesList =
+                List.of("DIESEL", "PETROL", "PETROL_AND_GAS", "HYBRID", "ELECTRIC");
 
         year.setItems(carYears);
         make.setItems(carMakeList);
