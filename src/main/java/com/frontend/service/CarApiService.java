@@ -14,11 +14,6 @@ public class CarApiService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarApiService.class);
     private final CarApiClient carApiClient;
 
-    public List<String> getCarMakes() {
-        LOGGER.info("Getting car makes.");
-        return carApiClient.getCarMakes();
-    }
-
     public List<String> getCarModels(String make, String type, Integer year) {
         LOGGER.info("Getting car models.");
         List<String> carModelsList = carApiClient.getCarModels(make, type, year);

@@ -3,6 +3,7 @@ package com.frontend.client;
 import com.frontend.config.BackendConfig;
 import com.frontend.domainDto.request.CarCreateDto;
 import com.frontend.domainDto.response.CarDto;
+import com.frontend.domainDto.response.MakeDto;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -103,5 +104,23 @@ public class CarClient {
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", "Bearer " + jwtToken);
         return header;
+    }
+
+    public List<MakeDto> getCarMakes() {
+        try {
+            HttpHeaders header = createJwtHeader();
+            HttpEntity<Void> requestEntity = new HttpEntity<>(header);
+
+            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiEndpoint() + "/makes")
+                                          .build()
+                                          .encode()
+                                          .toUri();
+
+            ResponseEntity<MakeDto[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, MakeDto[].class);
+            return Arrays.asList(ofNullable(response.getBody()).orElse(new MakeDto[0]));
+        } catch (RestClientException e) {
+            LOGGER.error(e.getMessage(), e);
+            return new ArrayList<>();
+        }
     }
 }

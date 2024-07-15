@@ -28,24 +28,6 @@ public class CarApiClient {
     private final RestTemplate restTemplate;
     private final BackendConfig backendConfig;
 
-    public List<String> getCarMakes() {
-        try {
-            HttpHeaders header = createJwtHeader();
-            HttpEntity<Void> requestEntity = new HttpEntity<>(header);
-
-            URI url = UriComponentsBuilder.fromHttpUrl(backendConfig.getCarApiMakesEndpoint() + "/makes")
-                    .build()
-                    .encode()
-                    .toUri();
-
-            ResponseEntity<String[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String[].class);
-            return Arrays.asList(ofNullable(response.getBody()).orElse(new String[0]));
-        } catch (RestClientException e) {
-            LOGGER.error(e.getMessage(), e);
-            return new ArrayList<>();
-        }
-    }
-
     public List<String> getCarModels(String make, String type, Integer year) {
         try {
             HttpHeaders header = createJwtHeader();

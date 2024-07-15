@@ -11,12 +11,12 @@ public class CarMapper {
     public List<CarCreateDto> mapToCarCreateDtoList(List<CarDto> carDtoList) {
         return carDtoList.stream()
                 .map(n -> new CarCreateDto(
-                        n.getId(),
-                        n.getMake(),
-                        n.getModel(),
+                        n.getVehicleId(),
+                        n.getVehicleModel().vehicleMake().makeName(),
+                        n.getVehicleModel().modelName(),
                         n.getYear(),
-                        n.getType(),
-                        n.getEngine()
+                        n.getVehicleModel().type(),
+                        n.getEngineType()
                 ))
                 .toList();
     }

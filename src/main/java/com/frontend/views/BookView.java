@@ -171,7 +171,7 @@ public class BookView extends VerticalLayout {
     private void setMultipliedCostForPremiumMakes(AvailableCarRepairDto service) {
         BigDecimal cost = service.getCost().setScale(0, RoundingMode.HALF_DOWN);
         service.setCost(cost);
-        if (service.getPremiumMakes().toLowerCase().contains(selectedCar.getMake().toLowerCase())) {
+        if (service.getPremiumMakes().toLowerCase().contains(selectedCar.getVehicleModel().vehicleMake().makeName().toLowerCase())) {
             cost = service.getCost().multiply(service.getMakeMultiplier());
             service.setCost(cost.setScale(0, RoundingMode.HALF_DOWN));
         }
@@ -185,11 +185,11 @@ public class BookView extends VerticalLayout {
 
         carComboBox.setItems(carService.getCarsForGivenUsername(currentUsername));
         carComboBox.setItemLabelGenerator(carDto ->
-                carDto.getMake() + " " +
-                        carDto.getModel() + " " +
-                        carDto.getType() + " " +
+                carDto.getVehicleModel().vehicleMake().makeName() + " " +
+                        carDto.getVehicleModel().modelName() + " " +
+                        carDto.getVehicleModel().type() + " " +
                         carDto.getYear() + " " +
-                        carDto.getEngine());
+                        carDto.getEngineType());
         carComboBox.setMaxWidth("500px");
         carComboBox.setWidthFull();
 
@@ -249,7 +249,7 @@ public class BookView extends VerticalLayout {
 
                 Span garageDetails = new Span(selectedGarage.getName() + ", " + selectedGarage.getAddress());
                 preparedBookingDetails.add("Selected garage", garageDetails);
-                Span carDetails = new Span(selectedCar.getMake() + ", " + selectedCar.getModel() + ", " + selectedCar.getType() + ", " + selectedCar.getYear() + ", " + selectedCar.getEngine());
+                Span carDetails = new Span(selectedCar.getVehicleModel().vehicleMake().makeName() + ", " + selectedCar.getVehicleModel().modelName() + ", " + selectedCar.getVehicleModel().type() + ", " + selectedCar.getYear() + ", " + selectedCar.getEngineType());
                 preparedBookingDetails.add("Selected car", carDetails);
                 VerticalLayout serviceDetailsLayout = new VerticalLayout();
                 serviceDetailsLayout.setSpacing(false);
@@ -369,7 +369,7 @@ public class BookView extends VerticalLayout {
                 dateLayout.setVisible(false);
                 bookLayout.setVisible(false);
                 List<Long> selectedServicesIdList = selectedServices.stream().map(AvailableCarRepairDto::getId).toList();
-                bookingService.saveBooking(selectedServicesIdList, selectedDate, selectedStartTime, selectedGarage.getId(), selectedCar.getId(), totalRepairTime);
+                bookingService.saveBooking(selectedServicesIdList, selectedDate, selectedStartTime, selectedGarage.getId(), selectedCar.getVehicleId(), totalRepairTime);
                 Anchor link = new Anchor("http://localhost:8081/services", "MyServices");
                 add(thankYouText);
                 add(endText);

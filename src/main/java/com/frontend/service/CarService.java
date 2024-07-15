@@ -3,6 +3,7 @@ package com.frontend.service;
 import com.frontend.client.CarClient;
 import com.frontend.domainDto.request.CarCreateDto;
 import com.frontend.domainDto.response.CarDto;
+import com.frontend.domainDto.response.MakeDto;
 import com.frontend.mapper.CarMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class CarService {
             return new ArrayList<>();
         }
         List<CarDto> carDtoList = carClient.getCarsForGivenUsername(username);
-        LOGGER.info("Retrieved car list with size of: " + carDtoList.size());
+        LOGGER.info("Retrieved car list with size of: {}", carDtoList.size());
         return carDtoList;
     }
 
@@ -62,5 +63,11 @@ public class CarService {
             carClient.deleteCar(carId);
             LOGGER.info("Car with ID {} has been deleted.", carId);
         }
+    }
+
+    public List<String> getCarMakes() {
+        LOGGER.info("Getting car makes.");
+        List<MakeDto> carMakes = carClient.getCarMakes();
+        return carMakes.stream().map(MakeDto::makeName).toList();
     }
 }

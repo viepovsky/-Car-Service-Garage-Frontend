@@ -59,7 +59,7 @@ public class CarForm extends FormLayout {
 
     private void setYearsMakesTypesLists() {
         carYears = generateCarYears();
-        List<String> carMakeList = carApiService.getCarMakes();
+        List<String> carMakeList = carService.getCarMakes();
         List<String> carTypeList =
                 List.of(
                         "SEDAN",
@@ -121,7 +121,7 @@ public class CarForm extends FormLayout {
 
     private void setCarModels(int carYear, String carMake, String carType) {
         List<String> modelList = carApiService.getCarModels(carMake, carType, carYear);
-        LOGGER.info("Car models set to: " + modelList);
+        LOGGER.info("Car models set to: {}", modelList);
         temporaryDto = new CarCreateDto();
         temporaryDto.setYear(carYear);
         temporaryDto.setMake(carMake);
@@ -196,7 +196,7 @@ public class CarForm extends FormLayout {
 
     private void delete() {
         CarCreateDto carCreateDto = binder.getBean();
-        List<CarRepairDto> serviceList = carRepairService.getCarServices(currentUsername).stream().filter(n -> Objects.equals(n.getCarDto().getId(), carCreateDto.getId())).toList();
+        List<CarRepairDto> serviceList = carRepairService.getCarServices(currentUsername).stream().filter(n -> Objects.equals(n.getCarDto().getVehicleId(), carCreateDto.getId())).toList();
         if (serviceList.isEmpty()) {
             carService.deleteCar(carCreateDto.getId());
             LOGGER.info("Button delete clicked with object: " + carCreateDto);
