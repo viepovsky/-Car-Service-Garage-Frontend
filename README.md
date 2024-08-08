@@ -8,6 +8,8 @@ Car Service Garage is an intuitive **RESTful** application that allows users to 
 
 This repository contains only the frontend of Car Service Garage. To function properly, it must be run in conjunction with the backend version, which can be found here: [**GitHub**](https://github.com/viepovsky/Car-Service-Garage-Backend).
 
+##### 08.08.2024 - frontend app does not support current version of backend, if you want to check frontend you must use old version of this application
+
 ## 3. Vaadin
 
 I used Vaadin to create the frontend, and while the design is not very good-looking, it effectively shows the backend's functionalities. Additionally, the application is fully responsive and can be accessed on any device. Click to see actual application views: [**Application views**](https://github.com/viepovsky/Car-Service-Garage-Frontend#8-application-views)
