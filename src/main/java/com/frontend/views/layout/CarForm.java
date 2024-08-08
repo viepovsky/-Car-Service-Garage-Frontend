@@ -2,7 +2,6 @@ package com.frontend.views.layout;
 
 import com.frontend.domainDto.request.CarCreateDto;
 import com.frontend.domainDto.response.CarRepairDto;
-import com.frontend.service.CarApiService;
 import com.frontend.service.CarRepairService;
 import com.frontend.service.CarService;
 import com.frontend.views.CarView;
@@ -14,20 +13,22 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class CarForm extends FormLayout {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarForm.class);
     private final String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-    private final CarApiService carApiService;
     private final CarService carService;
     private final CarView carView;
     private final CarRepairService carRepairService;
-    private List<Integer> carYearList;
+    private List<Integer> carYears;
     private final ComboBox<Integer> year = new ComboBox<>("Year");
     private final ComboBox<String> make = new ComboBox<>("Make");
     private final ComboBox<String> type = new ComboBox<>("Type");
@@ -40,8 +41,7 @@ public class CarForm extends FormLayout {
     private final Binder<CarCreateDto> binder = new BeanValidationBinder<>(CarCreateDto.class);
     private CarCreateDto temporaryDto;
 
-    public CarForm(CarApiService carApiService, CarService carService, CarView carView, CarRepairService carRepairService) {
-        this.carApiService = carApiService;
+    public CarForm(CarService carService, CarView carView, CarRepairService carRepairService) {
         this.carService = carService;
         this.carView = carView;
         this.carRepairService = carRepairService;
@@ -56,18 +56,32 @@ public class CarForm extends FormLayout {
     }
 
     private void setYearsMakesTypesLists() {
-        carYearList = carApiService.getCarYears();
-        List<String> carMakeList = carApiService.getCarMakes();
-        List<String> carTypeList = carApiService.getCarTypes();
-        List<String> carEnginesList = Arrays.asList("Petrol", "Diesel", "Hybrid", "Electric", "LPG", "Other");
-        Collections.sort(carYearList);
-        Collections.sort(carMakeList);
-        Collections.sort(carTypeList);
+        carYears = generateCarYears();
+        List<String> carMakeList = carService.getCarMakes();
+        List<String> carTypeList =
+                List.of(
+                        "SEDAN",
+                        "WAGON",
+                        "HATCHBACK",
+                        "CONVERTIBLE",
+                        "SUV",
+                        "MOTORCYCLE",
+                        "PICKUP",
+                        "VAN",
+                        "COUPE");
+        List<String> carEnginesList =
+                List.of("DIESEL", "PETROL", "PETROL_AND_GAS", "HYBRID", "ELECTRIC");
 
-        year.setItems(carYearList);
+        year.setItems(carYears);
         make.setItems(carMakeList);
         type.setItems(carTypeList);
         engine.setItems(carEnginesList);
+    }
+
+    private List<Integer> generateCarYears() {
+        List<Integer> carYears = new ArrayList<>();
+        IntStream.rangeClosed(1950, LocalDateTime.now().getYear()).forEach(carYears::add);
+        return carYears;
     }
 
     private void addFieldsAndButtons() {
@@ -89,7 +103,7 @@ public class CarForm extends FormLayout {
     private void addBinderValueChangeListener() {
         binder.addValueChangeListener(event -> {
             CarCreateDto carCreateDto = new CarCreateDto(binder.getBean());
-            LOGGER.info("Listener processed with binder values: " + carCreateDto);
+            LOGGER.info("Listener processed with binder values: {}", carCreateDto);
             int carYear = year.getValue();
             String carMake = make.getValue();
             String carType = type.getValue();
@@ -104,8 +118,8 @@ public class CarForm extends FormLayout {
     }
 
     private void setCarModels(int carYear, String carMake, String carType) {
-        List<String> modelList = carApiService.getCarModels(carMake, carType, carYear);
-        LOGGER.info("Car models set to: " + modelList);
+        List<String> modelList = carService.getCarModels(carMake, carType, carYear);
+        LOGGER.info("Car models set to: {}", modelList);
         temporaryDto = new CarCreateDto();
         temporaryDto.setYear(carYear);
         temporaryDto.setMake(carMake);
@@ -128,10 +142,10 @@ public class CarForm extends FormLayout {
 
             setVisible(true);
             year.focus();
-            year.setValue(carYearList.get(0));
+            year.setValue(carYears.get(0));
         } else {
-            LOGGER.info("Getting car models with values: " + carCreateDto.getMake() + ", " + carCreateDto.getType() + ", " + carCreateDto.getYear());
-            List<String> modelList = carApiService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
+            LOGGER.info("Getting car models with values: {}, {}, {}", carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
+            List<String> modelList = carService.getCarModels(carCreateDto.getMake(), carCreateDto.getType(), carCreateDto.getYear());
             model.setItems(modelList);
             temporaryDto = new CarCreateDto(carCreateDto);
             binder.setBean(new CarCreateDto(carCreateDto));
@@ -162,7 +176,7 @@ public class CarForm extends FormLayout {
         } else {
             Notification.show("All fields must be valid if you want to edit your car.");
         }
-        LOGGER.info("Button edit clicked with object: " + carCreateDto);
+        LOGGER.info("Button edit clicked with object: {}", carCreateDto);
     }
 
     private void save() {
@@ -175,12 +189,12 @@ public class CarForm extends FormLayout {
         } else {
             Notification.show("All fields must be valid if you want to add a new car.");
         }
-        LOGGER.info("Button save clicked with object: " + carCreateDto);
+        LOGGER.info("Button save clicked with object: {}", carCreateDto);
     }
 
     private void delete() {
         CarCreateDto carCreateDto = binder.getBean();
-        List<CarRepairDto> serviceList = carRepairService.getCarServices(currentUsername).stream().filter(n -> Objects.equals(n.getCarDto().getId(), carCreateDto.getId())).toList();
+        List<CarRepairDto> serviceList = carRepairService.getCarServices(currentUsername).stream().filter(n -> Objects.equals(n.getCarDto().getVehicleId(), carCreateDto.getId())).toList();
         if (serviceList.isEmpty()) {
             carService.deleteCar(carCreateDto.getId());
             LOGGER.info("Button delete clicked with object: " + carCreateDto);

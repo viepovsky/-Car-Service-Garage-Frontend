@@ -71,3 +71,8 @@ In addition, the view will enable administrators to manage customer accounts and
 
 ### User View
 ![User view screenshot](src/main/resources/screenshots/User_View.png)
+
+## NEW VERSION ATTENTION
+
+This version does not work well with new version of app backend. 
+If you want the app to be fully working use old version of this app with old version of backend

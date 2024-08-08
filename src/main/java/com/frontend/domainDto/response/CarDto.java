@@ -11,35 +11,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CarDto {
-    @JsonProperty("id")
-    private Long id;
+    @JsonProperty("vehicleId")
+    private Long vehicleId;
 
-    @JsonProperty("make")
-    private String make;
+    @JsonProperty("vehicleModel")
+    private ModelDto vehicleModel;
 
-    @JsonProperty("model")
-    private String model;
-
-    @JsonProperty("year")
+    @JsonProperty("manufactured_year")
     private int year;
 
-    @JsonProperty("type")
-    private String type;
-
-    @JsonProperty("engine")
-    private String engine;
+    @JsonProperty("engineType")
+    private String engineType;
 
     public CarDto(CarDto carDto) {
-        this.id = carDto.getId();
-        this.make = carDto.getMake();
-        this.model = carDto.getModel();
+        this.vehicleId = carDto.getVehicleId();
+        this.vehicleModel = carDto.getVehicleModel();
         this.year = carDto.getYear();
-        this.type = carDto.getType();
-        this.engine = carDto.getEngine();
+        this.engineType = carDto.getEngineType();
     }
 
     @Override
     public String toString() {
-        return make + ", " + model + ", " + year + ", " + type + ", " + engine;
+        return vehicleModel.vehicleMake().makeName() + ", " + vehicleModel.modelName() + ", " + year + ", " + vehicleModel.type() + ", " + engineType;
     }
 }
